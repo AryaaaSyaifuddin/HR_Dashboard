@@ -15,13 +15,7 @@ import Training from './pages/Training.jsx'
 
 import './App.css'
 
-/*
-  DAFTAR MENU
-  Setiap item punya:
-  - id     : identitas unik menu
-  - label  : teks yang tampil di sidebar
-  - page   : komponen halaman yang akan ditampilkan
-*/
+
 const MENU = [
   { id: 'home',        label: 'Home',                   page: <Home /> },
   { id: 'recruitment', label: 'Employee Recruitment',   page: <Recruitment /> },

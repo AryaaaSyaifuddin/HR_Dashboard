@@ -162,20 +162,8 @@ export default function Internship() {
 
   return (
     <div className="internship-wrapper">
-      <p className="section-label">Dashboard Internship — Analisis Data</p>
-
-      {/* =========================
-          FILTER SECTION
-      ========================= */}
       <div className="internship-filter">
-        <div className="filter-header">
-          <p className="filter-title">Filter</p>
-          <button className="filter-reset-btn" onClick={resetFilters}>
-            ↺ Reset
-          </button>
-        </div>
-
-        <div className="filter-controls">
+                <div className="filter-controls">
           {/* Filter Institusi */}
           <div className="filter-group">
             <label className="filter-label">Institusi</label>
@@ -184,7 +172,7 @@ export default function Internship() {
               value={filters.institusi}
               onChange={(e) => handleFilterChange("institusi", e.target.value)}
             >
-              <option value="">-- Semua Institusi --</option>
+              <option value="">Semua Institusi</option>
               {filterOptions.institusi.map((inst, idx) => (
                 <option key={idx} value={inst}>{inst}</option>
               ))}
@@ -199,7 +187,7 @@ export default function Internship() {
               value={filters.penempatan}
               onChange={(e) => handleFilterChange("penempatan", e.target.value)}
             >
-              <option value="">-- Semua Divisi --</option>
+              <option value="">Semua Divisi</option>
               {filterOptions.penempatan.map((penem, idx) => (
                 <option key={idx} value={penem}>{penem}</option>
               ))}
@@ -214,7 +202,7 @@ export default function Internship() {
               value={filters.status}
               onChange={(e) => handleFilterChange("status", e.target.value)}
             >
-              <option value="">-- Semua Status --</option>
+              <option value="">Semua Status</option>
               {filterOptions.status.map((stat, idx) => (
                 <option key={idx} value={stat}>
                   {stat.charAt(0).toUpperCase() + stat.slice(1)}
@@ -261,51 +249,55 @@ export default function Internship() {
           {/* Apply Button */}
           <div className="filter-group filter-group--action">
             <button className="filter-apply-btn" onClick={applyFilters}>
-              🔍 Terapkan Filter
+              Terapkan Filter
+            </button>
+            <button className="filter-reset-btn" onClick={resetFilters}>
+              Reset
             </button>
           </div>
         </div>
 
-        {/* Quick Filter Buttons (KPI) */}
-        <div className="quick-filters">
-          <p className="quick-filter-label">Quick Filter by Status</p>
-          <div className="filter-buttons">
-            <button 
-              className={`filter-btn ${filters.status === "" ? "filter-btn--active" : ""}`}
-              onClick={() => { setFilters({ ...filters, status: "" }); fetchDashboard({ ...filters, status: "" }); }}
-            >
-              <span className="filter-label">Total Intern</span>
-              <span className="filter-value">{data.kpi.total || 0}</span>
-            </button>
-            <button 
-              className={`filter-btn ${filters.status === "onboard" ? "filter-btn--active" : ""}`}
-              onClick={() => { setFilters({ ...filters, status: "onboard" }); fetchDashboard({ ...filters, status: "onboard" }); }}
-            >
-              <span className="filter-label">On Board</span>
-              <span className="filter-value">{data.kpi.onboard || 0}</span>
-            </button>
-            <button 
-              className={`filter-btn ${filters.status === "butuh surat balasan" ? "filter-btn--active" : ""}`}
-              onClick={() => { setFilters({ ...filters, status: "butuh surat balasan" }); fetchDashboard({ ...filters, status: "butuh surat balasan" }); }}
-            >
-              <span className="filter-label">Butuh surat balasan</span>
-              <span className="filter-value">{data.kpi.butuh_surat_balasan || 0}</span>
-            </button>
-            <button 
-              className={`filter-btn ${filters.status === "ajukan ulang" ? "filter-btn--active" : ""}`}
-              onClick={() => { setFilters({ ...filters, status: "ajukan ulang" }); fetchDashboard({ ...filters, status: "ajukan ulang" }); }}
-            >
-              <span className="filter-label">Ajukan ulang</span>
-              <span className="filter-value">{data.kpi.ajukan_ulang || 0}</span>
-            </button>
-            <button 
-              className={`filter-btn ${filters.status === "selesai" ? "filter-btn--active" : ""}`}
-              onClick={() => { setFilters({ ...filters, status: "selesai" }); fetchDashboard({ ...filters, status: "selesai" }); }}
-            >
-              <span className="filter-label">Selesai</span>
-              <span className="filter-value">{data.kpi.selesai || 0}</span>
-            </button>
-          </div>
+      </div>
+
+      {/* Quick Filter Buttons (KPI) */}
+      <div className="quick-filters">
+        <p className="quick-filter-label">KPI Status Internship</p>
+        <div className="filter-buttons">
+          <button 
+            className={`filter-btn ${filters.status === "" ? "filter-btn--active" : ""}`}
+            onClick={() => { setFilters({ ...filters, status: "" }); fetchDashboard({ ...filters, status: "" }); }}
+          >
+            <span className="filter-label">Total Intern</span>
+            <span className="filter-value">{data.kpi.total || 0}</span>
+          </button>
+          <button 
+            className={`filter-btn ${filters.status === "onboard" ? "filter-btn--active" : ""}`}
+            onClick={() => { setFilters({ ...filters, status: "onboard" }); fetchDashboard({ ...filters, status: "onboard" }); }}
+          >
+            <span className="filter-label">On Board</span>
+            <span className="filter-value">{data.kpi.onboard || 0}</span>
+          </button>
+          <button 
+            className={`filter-btn ${filters.status === "butuh surat balasan" ? "filter-btn--active" : ""}`}
+            onClick={() => { setFilters({ ...filters, status: "butuh surat balasan" }); fetchDashboard({ ...filters, status: "butuh surat balasan" }); }}
+          >
+            <span className="filter-label">Butuh surat balasan</span>
+            <span className="filter-value">{data.kpi.butuh_surat_balasan || 0}</span>
+          </button>
+          <button 
+            className={`filter-btn ${filters.status === "ajukan ulang" ? "filter-btn--active" : ""}`}
+            onClick={() => { setFilters({ ...filters, status: "ajukan ulang" }); fetchDashboard({ ...filters, status: "ajukan ulang" }); }}
+          >
+            <span className="filter-label">Ajukan ulang</span>
+            <span className="filter-value">{data.kpi.ajukan_ulang || 0}</span>
+          </button>
+          <button 
+            className={`filter-btn ${filters.status === "selesai" ? "filter-btn--active" : ""}`}
+            onClick={() => { setFilters({ ...filters, status: "selesai" }); fetchDashboard({ ...filters, status: "selesai" }); }}
+          >
+            <span className="filter-label">Selesai</span>
+            <span className="filter-value">{data.kpi.selesai || 0}</span>
+          </button>
         </div>
       </div>
 

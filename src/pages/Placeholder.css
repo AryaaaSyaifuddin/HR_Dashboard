@@ -37,3 +37,532 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   min-width: 150px;
 }
+
+/* ========================
+   INTERNSHIP DASHBOARD
+   ======================== */
+
+.internship-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+/* ========================
+   FILTER SECTION
+   ======================== */
+
+.internship-filter {
+  background-color: var(--white);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.filter-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.filter-reset-btn {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--navy);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-reset-btn:hover {
+  background-color: #f0f0f0;
+  border-color: var(--navy);
+}
+
+/* ========================
+   FILTER CONTROLS
+   ======================== */
+
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group--action {
+  display: flex;
+  align-items: flex-end;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+.filter-input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  background-color: var(--white);
+  color: var(--navy);
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--navy);
+  background-color: #f8f9fa;
+}
+
+/* ========================
+   DATE PICKER STYLES
+   ======================== */
+
+.filter-group--date {
+  position: relative;
+}
+
+.date-picker-wrapper {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.react-calendar {
+  width: 100%;
+  border: none;
+  background-color: white;
+  font-family: inherit;
+}
+
+.react-calendar button {
+  font-family: inherit;
+}
+
+.react-calendar__tile {
+  padding: 8px;
+  font-size: 13px;
+}
+
+.react-calendar__tile--active,
+.react-calendar__tile--range {
+  background-color: var(--navy);
+  color: white;
+}
+
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  background-color: var(--navy);
+  color: white;
+}
+
+.react-calendar__tile--range:not(.react-calendar__tile--rangeStart):not(.react-calendar__tile--rangeEnd) {
+  background-color: #e8eaff;
+  color: var(--navy);
+}
+
+.react-calendar__tile:hover {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__tile--active:hover {
+  background-color: var(--navy);
+}
+
+.filter-apply-btn {
+  background-color: var(--navy);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.filter-apply-btn:hover {
+  background-color: #051066;
+  box-shadow: 0 2px 8px rgba(6, 7, 113, 0.2);
+}
+
+/* ========================
+   QUICK FILTERS (KPI BUTTONS)
+   ======================== */
+
+.quick-filters {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.quick-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.filter-btn {
+  background-color: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--navy);
+  background-color: #f8f9fa;
+}
+
+.filter-btn--active {
+  background-color: var(--navy);
+  border-color: var(--navy);
+}
+
+.filter-btn .filter-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  margin: 0 0 4px 0;
+}
+
+.filter-btn--active .filter-label {
+  color: white;
+}
+
+.filter-btn .filter-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  display: block;
+}
+
+.filter-btn--active .filter-value {
+  color: white;
+}
+
+/* ========================
+   MAIN LAYOUT (3 ROW)
+   ======================== */
+
+/* Row 1: Full width - Permohonan chart */
+.chart-card--row1 {
+  width: 100%;
+}
+
+/* Row 2: 2 column grid - Institusi + Ket */
+.internship-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.internship-row-2 .chart-card {
+  width: 100%;
+}
+
+/* Row 3: Full width - Penempatan chart */
+.chart-card--row3 {
+  width: 100%;
+}
+
+/* ========================
+   CHART CARDS
+   ======================== */
+
+.internship-wrapper .chart-card {
+  background-color: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 16px 20px 20px;
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.chart-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* No Data */
+.no-data {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* ========================
+   KPI CARDS (Legacy)
+   ======================== */
+
+.kpi-cards-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background-color: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.kpi-bar {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.kpi-bar--navy   { background-color: var(--navy); }
+.kpi-bar--red    { background-color: var(--red); }
+.kpi-bar--green  { background-color: #16a34a; }
+.kpi-bar--orange { background-color: #FF9800; }
+.kpi-bar--blue   { background-color: #2196F3; }
+.kpi-bar--purple { background-color: #9C27B0; }
+
+/* ========================
+   GRID (Legacy)
+   ======================== */
+
+.chart-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.chart-row-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* ========================
+   SUMMARY (Legacy)
+   ======================== */
+
+.summary-card {
+  grid-column: 1 / -1;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.summary-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* ========================
+   RESPONSIVE
+   ======================== */
+
+@media (max-width: 1200px) {
+  .filter-controls {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .filter-buttons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .filter-controls {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .internship-row-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filter-controls {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-group--date {
+    grid-column: 1 / -1;
+  }
+
+  .date-picker-wrapper {
+    top: auto;
+    left: auto;
+    right: 0;
+    width: 90vw;
+    max-width: 400px;
+  }
+
+  .filter-group--action {
+    grid-column: 1 / -1;
+  }
+
+  .filter-apply-btn {
+    width: 100%;
+  }
+
+  .filter-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-cards-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .internship-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-group--date {
+    grid-column: auto;
+  }
+
+  .date-picker-wrapper {
+    width: 100vw;
+    left: -14px;
+    right: auto;
+    max-width: none;
+  }
+
+  .filter-group--action {
+    grid-column: auto;
+  }
+
+  .filter-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-btn {
+    padding: 12px;
+  }
+
+  .filter-btn .filter-label {
+    font-size: 11px;
+  }
+
+  .filter-btn .filter-value {
+    font-size: 18px;
+  }
+
+  .kpi-cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-value {
+    font-size: 24px;
+  }
+
+  .internship-filter {
+    padding: 12px;
+  }
+}

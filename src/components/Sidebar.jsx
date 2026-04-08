@@ -65,9 +65,9 @@ const ICONS = {
   ),
 }
 
-export default function Sidebar({ menu, activePage, onNavigate }) {
+export default function Sidebar({ menu, activePage, onNavigate, isOpen }) {
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
 
       <div className="sidebar-logo">
         <img src={logo} alt="HR Dashboard Logo" className="logo-box" />
@@ -83,17 +83,17 @@ export default function Sidebar({ menu, activePage, onNavigate }) {
             key={item.id}
             className={`nav-item ${activePage === item.id ? 'active' : ''}`}
             onClick={() => onNavigate(item.id)}
+            title={isOpen ? '' : item.label}
           >
             <span className="nav-icon">{ICONS[item.id]}</span>
-            <span>{item.label}</span>
+            <span className="nav-label">{item.label}</span>
           </button>
         ))}
       </nav>
 
-      <div className="sidebar-footer">
-        <div className="avatar">AD</div>
-        <span>Admin HR</span>
-      </div>
+      {/* <div className="sidebar-footer">
+        {isOpen && <span>Admin HR</span>}
+      </div> */}
 
     </aside>
   )

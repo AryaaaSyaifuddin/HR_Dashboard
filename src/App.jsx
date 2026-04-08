@@ -27,7 +27,7 @@ const MENU = [
   { id: 'recruitment', label: 'Employee Recruitment',   page: <Recruitment /> },
   { id: 'manpower',    label: 'Data Man Power',         page: <ManPower /> },
   { id: 'internship',  label: 'Internship',             page: <Internship /> },
-  { id: 'overtime',    label: 'Overtime',               page: <Overtime /> },
+  { id: 'overtime',    label: 'Attendance & Overtime',    page: <Overtime /> },
   { id: 'bpjs',        label: 'BPJS',                   page: <BPJS /> },
   { id: 'salary',      label: 'Salary & PPH21',         page: <Salary /> },
   { id: 'kpi',         label: 'KPI',                    page: <KPI /> },
@@ -35,39 +35,26 @@ const MENU = [
 ]
 
 export default function App() {
-  /*
-    useState: menyimpan "halaman aktif sekarang".
-    Nilai awal = 'home' (tampilkan Home saat pertama buka).
-    
-    activePage  = nilai saat ini
-    setActivePage = fungsi untuk mengubah nilai
-  */
-  const [activePage, setActivePage] = useState('home')
 
-  // Cari menu yang sedang aktif berdasarkan id-nya
+  const [activePage, setActivePage] = useState('home')
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+
   const currentMenu = MENU.find(m => m.id === activePage)
 
   return (
     <div className="app-layout">
-      {/*
-        Sidebar menerima:
-        - menu      : daftar semua menu
-        - activePage: halaman yang sedang aktif
-        - onNavigate: fungsi yang dipanggil saat user klik menu
-      */}
+
       <Sidebar
         menu={MENU}
         activePage={activePage}
         onNavigate={setActivePage}
+        isOpen={sidebarOpen}
       />
 
       <div className="main-area">
-        {/*
-          Topbar menerima title halaman yang sedang aktif
-        */}
-        <Topbar title={currentMenu.label} />
 
-        {/* Tampilkan konten halaman yang aktif */}
+        <Topbar title={currentMenu.label} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
         <div className="page-content">
           {currentMenu.page}
         </div>

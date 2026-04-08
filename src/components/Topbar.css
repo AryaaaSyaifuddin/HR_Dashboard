@@ -2,22 +2,101 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
-  background-color: var(--white);
-  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
   flex-shrink: 0;
+  height: 80px;
+  gap: 20px;
+  position: relative;
+}
+
+.topbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../assets/top-bar.png');
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(100%);
+  z-index: -1;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0;
+  z-index: 1;
+}
+
+.topbar-toggle {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.topbar-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.topbar-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+
+.topbar-logo {
+  width: 70px;
+  height: 50px;
+  object-fit: contain;
 }
 
 .topbar-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--navy);
+  font-size: 45px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
 }
+
+/* .topbar-stripe {
+  width: 50px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #000,
+    #000 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  flex-shrink: 0;
+} */
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+.topbar-page {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  margin: 0;
 }
 
 .topbar-badge {

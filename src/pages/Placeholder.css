@@ -1,0 +1,31 @@
+/* Shared placeholder style untuk semua halaman yang belum dikembangkan */
+.placeholder-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 12px;
+}
+
+.placeholder-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.placeholder-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.placeholder-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}

@@ -71,10 +71,6 @@ export default function Sidebar({ menu, activePage, onNavigate, isOpen }) {
 
       <div className="sidebar-logo">
         <img src={logo} alt="HR Dashboard Logo" className="logo-box" />
-        <div className="logo-text">
-          <p className="logo-title">HR Dashboard</p>
-          <p className="logo-sub">PT. Aldzama</p>
-        </div>
       </div>
 
       <nav className="sidebar-nav">

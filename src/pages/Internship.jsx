@@ -8,7 +8,7 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from "recharts";
 
-const API_URL = "http://127.0.0.1:5000/dashboard";
+const API_URL = "http://127.0.0.1:5000/internship/dashboard";
 const COLORS = ["#060771", "#BF1A1A", "#a0a0b0", "#FF9800", "#4CAF50", "#2196F3", "#9C27B0"];
 
 export default function Internship() {

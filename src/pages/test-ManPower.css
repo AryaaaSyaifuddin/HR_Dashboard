@@ -1,7 +1,7 @@
 /* ========================
-   RECRUITMENT PAGE
+   MANPOWER PAGE
    ======================== */
-.recruitment-wrapper {
+.manpower-wrapper {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -10,14 +10,14 @@
 /* ========================
    FILTER SECTION
    ======================== */
-.filter-section-recruitment {
+.filter-section {
   background-color: var(--white);
   border-radius: 10px;
   border: 1px solid var(--border);
   padding: 20px;
 }
 
-.filter-section-recruitment h3 {
+.filter-section h3 {
   margin: 0 0 16px;
   font-size: 14px;
   font-weight: 700;
@@ -83,72 +83,60 @@
 }
 
 /* ========================
-   KPI GRID (5 COLUMNS)
+   KPI GRID
    ======================== */
-.kpi-grid-5 {
+.kpi-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
-.kpi-card-recruitment {
+.kpi-card {
   background-color: var(--white);
   border-radius: 10px;
   border: 1px solid var(--border);
   border-left: 4px solid;
-  padding: 16px;
+  padding: 20px;
   transition: transform 0.2s, box-shadow 0.2s;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
-.kpi-card-recruitment:hover {
+.kpi-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .kpi-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .kpi-value {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--navy);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
 }
 
 .kpi-subtitle {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   margin: 0;
 }
 
 /* ========================
-   CHART LAYOUT
+   CHART ROWS
    ======================== */
-.chart-row-recruitment {
+.chart-row-2 {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
-  align-items: stretch;
 }
 
-.chart-col-large {
-  min-width: 0;
-}
-
-.chart-col-small {
-  min-width: 0;
-}
-
-.chart-row-full {
+.chart-row-1 {
   display: grid;
   grid-template-columns: 1fr;
 }
@@ -161,9 +149,6 @@
   padding: 16px 20px 20px;
   contain: content;
   pointer-events: auto;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .chart-card.resizing {
@@ -183,43 +168,15 @@
   margin-bottom: 16px;
 }
 
-.kpi-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-@media (max-width: 1024px) {
-  .kpi-grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .kpi-grid-4 {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ========================
    RESPONSIVE
    ======================== */
-@media (max-width: 1440px) {
-  .kpi-grid-5 {
-    grid-template-columns: repeat(5, 1fr);
-  }
-  
-  .chart-row-recruitment {
-    grid-template-columns: 1.5fr 1fr;
-  }
-}
-
 @media (max-width: 1024px) {
-  .kpi-grid-5 {
+  .kpi-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .chart-row-recruitment {
+  .chart-row-2 {
     grid-template-columns: 1fr;
   }
 }
@@ -233,29 +190,7 @@
     width: 100%;
   }
 
-  .kpi-grid-5 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .kpi-card-recruitment {
-    padding: 12px;
-  }
-
-  .kpi-value {
-    font-size: 20px;
-  }
-
-  .kpi-label {
-    font-size: 10px;
-  }
-
-  .kpi-subtitle {
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .kpi-grid-5 {
+  .kpi-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -1,15 +1,15 @@
-/* ========================
-   WRAPPER
-   ======================== */
+
+
+
 .mp-wrapper {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* ========================
-   LOADING & ERROR
-   ======================== */
+
+
+
 .mp-loading {
   display: flex;
   flex-direction: column;
@@ -57,9 +57,9 @@
   background: var(--red-light, #f9e8e8);
 }
 
-/* ========================
-   FILTER BAR — compact
-   ======================== */
+
+
+
 .mp-filter-bar {
   display: flex;
   align-items: center;
@@ -166,9 +166,9 @@
   background: var(--red);
 }
 
-/* ========================
-   KPI CARDS
-   ======================== */
+
+
+
 .mp-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -224,9 +224,9 @@
   width: 100%;
 }
 
-/* ========================
-   CHART CARDS
-   ======================== */
+
+
+
 .mp-card {
   background: var(--white);
   border: 0.5px solid var(--border);
@@ -254,17 +254,17 @@
   padding: 60px 20px;
 }
 
-/* ========================
-   LAYOUT ROWS
-   ======================== */
+
+
+
 .mp-row-2 {
   display: grid;
   gap: 16px;
 }
 
-/* ========================
-   PIE LEGEND
-   ======================== */
+
+
+
 .mp-pie-legend {
   border-top: 0.5px solid var(--border);
   padding-top: 10px;
@@ -303,9 +303,9 @@
   color: var(--navy);
 }
 
-/* ========================
-   RESPONSIVE
-   ======================== */
+
+
+
 @media (max-width: 1200px) {
   .mp-kpi-grid {
     grid-template-columns: repeat(2, 1fr);

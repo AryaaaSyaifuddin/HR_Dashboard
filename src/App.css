@@ -1,7 +1,3 @@
-/* ================================
-   VARIABEL WARNA
-   Dipakai di seluruh file CSS
-   ================================ */
 :root {
   --red:        #BF1A1A;
   --red-dark:   #8a1212;
@@ -15,7 +11,6 @@
   --text-muted: #666666;
 }
 
-/* Reset bawaan browser */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -27,31 +22,20 @@ body {
   background-color: var(--gray-bg);
 }
 
-/*
-  Layout utama: sidebar di kiri, konten di kanan.
-  Menggunakan CSS Flexbox.
-*/
 .app-layout {
   display: flex;
-  height: 100vh; /* 100% tinggi layar */
+  height: 100vh;
   contain: layout;
 }
 
-/*
-  Area konten (topbar + halaman)
-  flex: 1 artinya "isi sisa ruang yang tersedia"
-*/
 .main-area {
   flex: 1;
   display: flex;
-  flex-direction: column; /* topbar di atas, konten di bawah */
+  flex-direction: column; 
   overflow: hidden;
   will-change: auto;
 }
 
-/*
-  Area konten halaman, bisa di-scroll jika panjang
-*/
 .page-content {
   flex: 1;
   padding: 24px;

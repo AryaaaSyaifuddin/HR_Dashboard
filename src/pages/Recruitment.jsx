@@ -266,7 +266,7 @@ function Recruitment() {
           {(trend || []).length === 0
             ? <p className="rc-no-data">Tidak ada data</p>
             : (
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={380}>
                 <AreaChart data={trend} margin={{ top: 8, right: 16, left: 0, bottom: 40 }}>
                   <defs>
                     <linearGradient id="gradRc" x1="0" y1="0" x2="0" y2="1">
@@ -275,8 +275,8 @@ function Recruitment() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false} />
-                  <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#888' }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#090909' }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: '#232323' }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Area type="monotone" dataKey="jumlah" name="Kandidat" stroke={NAVY} strokeWidth={2} fill="url(#gradRc)" dot={{ r: 3, fill: NAVY, strokeWidth: 0 }} activeDot={{ r: 5 }} />
                 </AreaChart>
@@ -343,30 +343,7 @@ function Recruitment() {
           )
         }
       </div>
-
-      {/* ===== ROW 3: Funnel — FULL WIDTH ===== */}
-      {funnelColored.length > 0 && (
-        <div className="rc-card">
-          <p className="rc-card-title">Funnel Rekrutmen</p>
-          <p className="rc-card-desc">Sebaran kandidat di setiap tahap proses rekrutmen</p>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={funnelColored} layout="vertical" barCategoryGap="30%"
-              margin={{ top: 0, right: 60, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="status" tick={{ fontSize: 12, fill: '#444', textTransform: 'capitalize' }} width={140} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="jumlah" name="Jumlah" radius={[0, 4, 4, 0]} maxBarSize={24}
-                label={{ position: 'right', fontSize: 12, fontWeight: 600 }}>
-                {funnelColored.map((d, i) => (
-                  <Cell key={i} fill={d.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
+      
     </div>
   )
 }

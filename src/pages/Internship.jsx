@@ -406,18 +406,7 @@ export default function Internship() {
             <p className="no-data">No Data Available</p>
           ) : (
             <div className="institusi-layout">
-              <div className="institusi-chart">
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={data.institusi} barCategoryGap="40%" margin={{ top: 4, right: 8, left: 0, bottom: 48 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false} />
-                    <XAxis dataKey="institusi" tick={{ fontSize: 10, fill: "#000000" }} angle={-35} textAnchor="end" height={64} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#565656" }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "0.5px solid #e0e0e0" }} />
-                    <Bar dataKey="jumlah" name="Jumlah" fill="#060771" barSize={25} radius={[4, 4, 0, 0]} maxBarSize={32} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
+              
               <div className="institusi-list">
                 <p className="institusi-list-title">Ranking</p>
                 {topInstitusi.map((item, idx) => (

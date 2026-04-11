@@ -9,6 +9,8 @@ import './ManPower.css'
 const API_URL = 'http://127.0.0.1:5000/manpower/dashboard'
 const RED = '#BF1A1A', NAVY = '#060771', GREEN = '#16a34a', ORANGE = '#ea580c'
 
+const cleanVal = v => (!v || v === 'nan' || v === 'NaN' || String(v).trim().toLowerCase() === 'nan') ? 'No Status' : v
+
 const CT = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
@@ -44,10 +46,10 @@ function ManPower() {
     fetchData()
     axios.get(API_URL).then(res => {
       setOptions({
-        branch:         res.data.branch.map(d => d.branch),
-        jabatan:        res.data.jabatan.map(d => d.jabatan),
-        status_kontrak: res.data.status_kontrak.map(d => d.status_kontrak),
-        group_project:  res.data.group_project.map(d => d.group_project),
+        branch:         res.data.branch.map(d => cleanVal(d.branch)),
+        jabatan:        res.data.jabatan.map(d => cleanVal(d.jabatan)),
+        status_kontrak: res.data.status_kontrak.map(d => cleanVal(d.status_kontrak)),
+        group_project:  res.data.group_project.map(d => cleanVal(d.group_project)),
       })
     }).catch(() => {})
   }, [])
@@ -65,13 +67,16 @@ function ManPower() {
   const pctPerm = total ? Math.round(perm / total * 100) : 0
   const pctKon  = total ? Math.round(kon  / total * 100) : 0
 
-  const pieData = data.status_kontrak.map((d,i) => ({
-    ...d, color: i===0 ? NAVY : i===1 ? RED : ORANGE
-  }))
+  // Clean NaN di semua data
+  const cleanSK  = data.status_kontrak.map(d => ({ ...d, status_kontrak: cleanVal(d.status_kontrak) }))
+  const cleanJab = data.jabatan.map(d => ({ ...d, jabatan: cleanVal(d.jabatan) }))
+  const cleanBr  = data.branch.map(d => ({ ...d, branch: cleanVal(d.branch) }))
+  const cleanGP  = data.group_project.map(d => ({ ...d, group_project: cleanVal(d.group_project) }))
 
-  const topJabatan   = [...data.jabatan].sort((a,b) => b.jumlah-a.jumlah).slice(0,10)
-  const branchSorted = [...data.branch].sort((a,b) => b.jumlah-a.jumlah)
-  const gpSorted     = [...data.group_project].sort((a,b) => b.jumlah-a.jumlah)
+  const pieData      = cleanSK.map((d,i) => ({ ...d, color: i===0?NAVY:i===1?RED:ORANGE }))
+  const topJabatan   = [...cleanJab].sort((a,b) => b.jumlah-a.jumlah).slice(0,10)
+  const branchSorted = [...cleanBr].sort((a,b) => b.jumlah-a.jumlah)
+  const gpSorted     = [...cleanGP].sort((a,b) => b.jumlah-a.jumlah)
 
   return (
     <div className="mp-wrap">
@@ -85,9 +90,9 @@ function ManPower() {
             { key:'status_kontrak', label:'Status Kontrak' },
             { key:'group_project', label:'Group Project' },
           ].map((f,idx) => (
-            <>
-              {idx > 0 && <div key={`d${idx}`} className="mp-fd"/>}
-              <div key={f.key} className="mp-fg">
+            <div key={f.key} style={{ display:'contents' }}>
+              {idx > 0 && <div className="mp-fd"/>}
+              <div className="mp-fg">
                 <label className="mp-fl">{f.label}</label>
                 <select className="mp-fs" value={filters[f.key]} onChange={e => setF(f.key, e.target.value)}>
                   <option value="">Semua</option>
@@ -96,7 +101,7 @@ function ManPower() {
                   ))}
                 </select>
               </div>
-            </>
+            </div>
           ))}
         </div>
         <div className="mp-fa">
@@ -105,7 +110,7 @@ function ManPower() {
         </div>
       </div>
 
-      {/* KPI — 4 card 1 baris */}
+      {/* KPI */}
       <div className="mp-kpi4">
         {[
           { bg:'#e8e9f9', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" fill={NAVY}/><circle cx="17" cy="7" r="3" fill={NAVY} opacity=".4"/><path d="M1 20c0-4 3.6-7 8-7s8 3 8 7" fill={NAVY} opacity=".3"/><path d="M17 13c2.5 0 5 1.5 5 4" stroke={NAVY} strokeWidth="1.5" fill="none" opacity=".4"/></svg>, pct:'Total', pctC:NAVY, val:total, lbl:'Total Karyawan', bar:NAVY },
@@ -125,10 +130,9 @@ function ManPower() {
         ))}
       </div>
 
-      {/* ROW UTAMA: 3 kolom — Donut + Jabatan hbar + Branch vertikal */}
+      {/* ROW UTAMA: 3 kolom — Donut | Jabatan hbar | Group Project hbar */}
       <div className="mp-row3">
 
-        {/* Donut status kontrak */}
         <div className="mp-card">
           <p className="mp-ctitle">Komposisi Status Kontrak</p>
           <p className="mp-cdesc">Perbandingan jumlah per jenis kontrak</p>
@@ -156,19 +160,18 @@ function ManPower() {
           )}
         </div>
 
-        {/* Hbar jabatan */}
         <div className="mp-card">
           <p className="mp-ctitle">Distribusi Jabatan</p>
           <p className="mp-cdesc">Jumlah karyawan per posisi jabatan (top 10)</p>
           {topJabatan.length === 0 ? <p className="mp-nodata">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={topJabatan} layout="vertical" barCategoryGap="25%"
+              <BarChart data={topJabatan} layout="vertical" barCategoryGap="10%"
                 margin={{ top:0, right:40, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
                 <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="jabatan" tick={{ fontSize:11, fill:'#555' }} width={110} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="jabatan" tick={{ fontSize:11, fill:'#555' }} width={100} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CT/>}/>
-                <Bar dataKey="jumlah" name="Jumlah" fill={NAVY} radius={[0,4,4,0]} maxBarSize={18}
+                <Bar dataKey="jumlah" name="Jumlah" fill={NAVY} radius={[0,4,4,0]} maxBarSize={25}
                   label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
               </BarChart>
             </ResponsiveContainer>
@@ -176,45 +179,45 @@ function ManPower() {
         </div>
 
         <div className="mp-card">
-        <p className="mp-ctitle">Distribusi Group Project</p>
-        <p className="mp-cdesc">Jumlah karyawan per kelompok project / divisi kerja</p>
-        {gpSorted.length === 0 ? <p className="mp-nodata">Tidak ada data</p> : (
-          <ResponsiveContainer width="100%" height={Math.max(240, gpSorted.length * 34)}>
-            <BarChart data={gpSorted} layout="vertical" barCategoryGap="28%"
-              margin={{ top:0, right:60, left:0, bottom:0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-              <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-              <YAxis type="category" dataKey="group_project" tick={{ fontSize:11, fill:'#444' }} width={145} axisLine={false} tickLine={false}/>
+          <p className="mp-ctitle">Distribusi Group Project</p>
+          <p className="mp-cdesc">Jumlah karyawan per kelompok project / divisi kerja</p>
+          {gpSorted.length === 0 ? <p className="mp-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={Math.max(240, gpSorted.length*34)}>
+              <BarChart data={gpSorted} layout="vertical" barCategoryGap="10%"
+                margin={{ top:0, right:60, left:0, bottom:0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="group_project" tick={{ fontSize:11, fill:'#444' }} width={145} axisLine={false} tickLine={false}/>
+                <Tooltip content={<CT/>}/>
+                <Bar dataKey="jumlah" name="Jumlah" fill={NAVY} radius={[0,4,4,0]} maxBarSize={30}
+                  label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+      </div>
+
+      {/* Branch — bar vertikal full width */}
+      <div className="mp-card">
+        <p className="mp-ctitle">Karyawan per Branch</p>
+        <p className="mp-cdesc">Jumlah karyawan di setiap cabang / lokasi</p>
+        {branchSorted.length === 0 ? <p className="mp-nodata">Tidak ada data</p> : (
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={branchSorted} barCategoryGap="5%"
+              margin={{ top:4, right:8, left:0, bottom:60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
+              <XAxis dataKey="branch" tick={{ fontSize:10, fill:'#888' }} angle={-35} textAnchor="end" height={70} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
               <Tooltip content={<CT/>}/>
-              <Bar dataKey="jumlah" name="Jumlah" fill={NAVY} radius={[0,4,4,0]} maxBarSize={22}
-                label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
+              <Bar dataKey="jumlah" name="Jumlah" fill={RED} radius={[4,4,0,0]} maxBarSize={40}
+                label={{ position:'top', fontSize:11, fill:RED, fontWeight:600 }}/>
             </BarChart>
           </ResponsiveContainer>
         )}
       </div>
 
-        
-
-      </div>
-
-      <div className="mp-card">
-          <p className="mp-ctitle">Karyawan per Branch</p>
-          <p className="mp-cdesc">Jumlah karyawan di setiap cabang / lokasi</p>
-          {branchSorted.length === 0 ? <p className="mp-nodata">Tidak ada data</p> : (
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={branchSorted} barCategoryGap="35%"
-                margin={{ top:4, right:8, left:0, bottom:60 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-                <XAxis dataKey="branch" tick={{ fontSize:10, fill:'#888' }} angle={-35} textAnchor="end" height={70} axisLine={false} tickLine={false}/>
-                <YAxis tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <Tooltip content={<CT/>}/>
-                <Bar dataKey="jumlah" name="Jumlah" fill={RED} radius={[4,4,0,0]} maxBarSize={28}
-                  label={{ position:'top', fontSize:11, fill:RED, fontWeight:600 }}/>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>    
-      </div>
+    </div>
   )
 }
 

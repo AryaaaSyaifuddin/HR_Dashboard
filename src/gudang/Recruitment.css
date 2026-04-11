@@ -139,10 +139,3 @@
   .rc-filter-inner { flex-direction: column; align-items: stretch; }
   .rc-filter-divider { display: none; }
 }
-
-/* card header + top toggle */
-.rc-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.rc-top-toggle{display:flex;gap:4px;flex-shrink:0;margin-bottom:12px}
-.rc-top-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;border:0.5px solid rgba(0,0,0,0.08);background:#f4f4f6;color:#666;cursor:pointer;transition:all .15s}
-.rc-top-btn:hover{border-color:#060771;color:#060771}
-.rc-top-btn--active{background:#060771;color:white;border-color:#060771}

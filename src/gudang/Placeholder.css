@@ -265,8 +265,8 @@
 }
 
 .ikpi-label {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 13px;
+  color: #1f1f1f;
   margin-bottom: 10px;
 }
 
@@ -777,6 +777,10 @@
   width: 100%;
 }
 
+.chart-card--row3 {
+  height: 325px;
+}
+
 /* Row 2: 2 column grid - Institusi + Ket */
 .internship-row-2 {
   display: grid;
@@ -1120,32 +1124,3 @@
     padding: 8px;
   }
 }
-
-/* ========================
-   INTERNSHIP — row 3 kolom
-   ======================== */
-.int-row3 {
-  display: grid;
-  grid-template-columns: 0.8fr 0.8fr 1.4fr;
-  gap: 16px;
-}
-
-.int-penem-card { min-width: 0; }
-
-.int-card-header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 10px; margin-bottom: 0;
-}
-
-.int-top-toggle { display: flex; gap: 4px; flex-shrink: 0; }
-
-.int-top-btn {
-  padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 500;
-  border: 0.5px solid rgba(0,0,0,0.08); background: #f4f4f6; color: #666;
-  cursor: pointer; transition: all .15s;
-}
-.int-top-btn:hover { border-color: #060771; color: #060771; }
-.int-top-btn--active { background: #060771; color: white; border-color: #060771; }
-
-@media(max-width:1200px){ .int-row3 { grid-template-columns: 1fr 1fr; } }
-@media(max-width:768px)  { .int-row3 { grid-template-columns: 1fr; } }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, memo } from 'react'
 import {
-  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import './Training.css'
@@ -9,7 +9,7 @@ const API_URL = 'http://127.0.0.1:5000/training/dashboard'
 const NAVY = '#060771', RED = '#BF1A1A', GREEN = '#16a34a'
 const ORANGE = '#ea580c', AMBER = '#b45309'
 
-const STATUS_C = { done: GREEN, 'in progress': NAVY, cancel: RED }
+const cleanVal = v => (!v || v === 'nan' || v === 'NaN' || String(v).trim().toLowerCase() === 'nan') ? 'No Status' : v
 
 const CT = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
@@ -22,11 +22,13 @@ const CT = ({ active, payload, label }) => {
 }
 
 function Training() {
-  const [data, setData]       = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError]     = useState(null)
-  const [options, setOptions] = useState({ divisi:[] })
-  const [filters, setFilters] = useState({ jenis:'', divisi:'', status:'', startMonth:'', endMonth:'' })
+  const [data, setData]             = useState(null)
+  const [loading, setLoading]       = useState(true)
+  const [error, setError]           = useState(null)
+  const [options, setOptions]       = useState({ divisi:[] })
+  const [topDivisi, setTopDivisi]   = useState('5')
+  const [topPelat, setTopPelat]     = useState('5')
+  const [filters, setFilters]       = useState({ jenis:'', divisi:'', status:'', startMonth:'', endMonth:'' })
 
   const fetchData = useCallback(async (f = filters) => {
     setLoading(true)
@@ -47,7 +49,7 @@ function Training() {
   useEffect(() => {
     fetchData()
     fetch(API_URL).then(r => r.json()).then(j =>
-      setOptions({ divisi: (j.divisi||[]).map(d => d.divisi) })
+      setOptions({ divisi: (j.divisi||[]).map(d => cleanVal(d.divisi)) })
     ).catch(() => {})
   }, [])
 
@@ -59,7 +61,7 @@ function Training() {
   if (error)   return <div className="tr-wrap"><div className="tr-err"><p>Gagal: {error}</p><button onClick={() => fetchData()}>Coba lagi</button></div></div>
   if (!data)   return null
 
-  const { kpi, jenis, divisi, pelatihan, status, trend } = data
+  const { kpi, divisi, pelatihan, trend } = data
   const total     = kpi?.total      || 0
   const pctInt    = total ? Math.round(kpi.internal    / total * 100) : 0
   const pctExt    = total ? Math.round(kpi.external    / total * 100) : 0
@@ -67,10 +69,15 @@ function Training() {
   const pctInProg = total ? Math.round(kpi.in_progress / total * 100) : 0
   const pctCancel = total ? Math.round(kpi.cancel      / total * 100) : 0
 
-  const pieJenis  = (jenis ||[]).map((d,i) => ({ ...d, color: i===0?NAVY:RED }))
-  const pieStatus = (status||[]).map(d => ({ ...d, color: STATUS_C[d.status]||AMBER }))
-  const divisiS   = [...(divisi   ||[])].sort((a,b) => b.jumlah-a.jumlah)
-  const pelatihanS= [...(pelatihan||[])].sort((a,b) => b.jumlah-a.jumlah)
+  // Clean NaN
+  const divisiClean   = (divisi   ||[]).map(d => ({ ...d, divisi:    cleanVal(d.divisi) }))
+  const pelatihanClean= (pelatihan||[]).map(d => ({ ...d, pelatihan: cleanVal(d.pelatihan) }))
+
+  const divisiS    = [...divisiClean].sort((a,b)    => b.jumlah-a.jumlah)
+  const pelatihanS = [...pelatihanClean].sort((a,b) => b.jumlah-a.jumlah)
+
+  const divisiSliced   = topDivisi==='5'  ? divisiS.slice(0,5)   : topDivisi==='10'  ? divisiS.slice(0,10)   : divisiS
+  const pelatihanSliced= topPelat==='5'   ? pelatihanS.slice(0,5) : topPelat==='10'   ? pelatihanS.slice(0,10) : pelatihanS
 
   const kpiRows = [
     [
@@ -91,16 +98,14 @@ function Training() {
       {/* FILTER */}
       <div className="tr-filter">
         <div className="tr-fi">
-          {[
-            { key:'jenis', label:'Jenis', opts:[{v:'',l:'Semua'},{v:'internal',l:'Internal'},{v:'external',l:'External'}] },
-          ].map(f => (
-            <div key={f.key} className="tr-fg">
-              <label className="tr-fl">{f.label}</label>
-              <select className="tr-fs" value={filters[f.key]} onChange={e => setF(f.key, e.target.value)}>
-                {f.opts.map((o,i) => <option key={i} value={o.v}>{o.l}</option>)}
-              </select>
-            </div>
-          ))}
+          <div className="tr-fg">
+            <label className="tr-fl">Jenis</label>
+            <select className="tr-fs" value={filters.jenis} onChange={e => setF('jenis', e.target.value)}>
+              <option value="">Semua</option>
+              <option value="internal">Internal</option>
+              <option value="external">External</option>
+            </select>
+          </div>
           <div className="tr-fd"/>
           <div className="tr-fg">
             <label className="tr-fl">Divisi</label>
@@ -136,28 +141,26 @@ function Training() {
         </div>
       </div>
 
-      {kpiRows.map((row, ri) => (
-        <div key={ri} className="tr-kpi3">
-          {row.map((c,i) => (
-            <div key={i} className="tr-kcard">
-              <div className="tr-ktop">
-                <div className="tr-kico" style={{ background:c.bg }}>{c.icon}</div>
-                <span className="tr-kpct" style={{ color:c.pctC }}>{c.pct}</span>
-              </div>
-              <p className="tr-kval">{c.val}</p>
-              <p className="tr-klbl">{c.lbl}</p>
-              <div className="tr-kbar" style={{ background:c.bar }}/>
+      {/* KPI 1 baris 6 kolom */}
+      <div className="tr-kpi6">
+        {[...kpiRows[0], ...kpiRows[1]].map((c, i) => (
+          <div key={i} className="tr-kcard">
+            <div className="tr-ktop">
+              <div className="tr-kico" style={{ background: c.bg }}>{c.icon}</div>
+              <span className="tr-kpct" style={{ color: c.pctC }}>{c.pct}</span>
             </div>
-          ))}
-        </div>
-      ))}
+            <p className="tr-kval">{c.val}</p>
+            <p className="tr-klbl">{c.lbl}</p>
+            <div className="tr-kbar" style={{ background: c.bar }}/>
+          </div>
+        ))}
+      </div>
 
-      {/* AREA TREND — full width */}
       <div className="tr-card">
         <p className="tr-ctitle">Tren Pelatihan per Bulan</p>
         <p className="tr-cdesc">Jumlah peserta pelatihan setiap bulan</p>
         {(trend||[]).length === 0 ? <p className="tr-nodata">Tidak ada data</p> : (
-          <ResponsiveContainer width="100%" height={210}>
+          <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={trend} margin={{ top:8, right:16, left:0, bottom:40 }}>
               <defs>
                 <linearGradient id="gTr" x1="0" y1="0" x2="0" y2="1">
@@ -176,21 +179,33 @@ function Training() {
         )}
       </div>
 
-      {/* ROW: Hbar divisi (55%) + Donut jenis (45%) */}
-      <div className="tr-row2" style={{ gridTemplateColumns:'1.2fr 1fr' }}>
+      {/* ROW: Divisi (kiri) + Pelatihan terpopuler (kanan) — keduanya ada top filter */}
+      <div className="tr-row2" style={{ gridTemplateColumns:'1fr 1.3fr' }}>
 
         <div className="tr-card">
-          <p className="tr-ctitle">Peserta per Divisi</p>
-          <p className="tr-cdesc">Jumlah karyawan mengikuti pelatihan per divisi</p>
-          {divisiS.length === 0 ? <p className="tr-nodata">Tidak ada data</p> : (
-            <ResponsiveContainer width="100%" height={Math.max(200, divisiS.length*32)}>
-              <BarChart data={divisiS} layout="vertical" barCategoryGap="28%"
+          <div className="tr-card-header">
+            <div>
+              <p className="tr-ctitle">Peserta per Divisi</p>
+              <p className="tr-cdesc">Jumlah karyawan mengikuti pelatihan per divisi</p>
+            </div>
+            <div className="tr-top-toggle">
+              {['5','10','all'].map(v => (
+                <button key={v} className={`tr-top-btn${topDivisi===v?' tr-top-btn--active':''}`}
+                  onClick={() => setTopDivisi(v)}>
+                  {v==='all'?'All':`Top ${v}`}
+                </button>
+              ))}
+            </div>
+          </div>
+          {divisiSliced.length === 0 ? <p className="tr-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={Math.max(200, divisiSliced.length*34)}>
+              <BarChart data={divisiSliced} layout="vertical" barCategoryGap="10%"
                 margin={{ top:0, right:50, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="divisi" tick={{ fontSize:11, fill:'#444' }} width={110} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#212121' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="divisi" tick={{ fontSize:11, fill:'#121212' }} width={110} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CT/>}/>
-                <Bar dataKey="jumlah" name="Peserta" fill={NAVY} radius={[0,4,4,0]} maxBarSize={18}
+                <Bar dataKey="jumlah" name="Peserta" fill={NAVY} BarSize={30} radius={[0,4,4,0]} maxBarSize={30}
                   label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
               </BarChart>
             </ResponsiveContainer>
@@ -198,51 +213,35 @@ function Training() {
         </div>
 
         <div className="tr-card">
-          <p className="tr-ctitle">Status Pelatihan</p>
-          <p className="tr-cdesc">Komposisi done, in progress, dan cancel</p>
-          {pieStatus.length === 0 ? <p className="tr-nodata">Tidak ada data</p> : (
-            <>
-              <ResponsiveContainer width="100%" height={170}>
-                <PieChart>
-                  <Pie data={pieStatus} cx="50%" cy="50%"
-                    innerRadius={50} outerRadius={76} paddingAngle={3} cornerRadius={4}
-                    dataKey="jumlah" nameKey="status">
-                    {pieStatus.map((d,i) => <Cell key={i} fill={d.color}/>)}
-                  </Pie>
-                  <Tooltip content={<CT/>}/>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="tr-leg">
-                {pieStatus.map((d,i) => (
-                  <div key={i} className="tr-litem">
-                    <span className="tr-lleft"><span className="tr-ldot" style={{ background:d.color }}/><span className="tr-lname" style={{ textTransform:'capitalize' }}>{d.status}</span></span>
-                    <span className="tr-lval">{d.jumlah}</span>
-                  </div>
-                ))}
-              </div>
-            </>
+          <div className="tr-card-header">
+            <div>
+              <p className="tr-ctitle">Jenis Pelatihan Terpopuler</p>
+              <p className="tr-cdesc">Nama pelatihan yang paling banyak diikuti</p>
+            </div>
+            <div className="tr-top-toggle">
+              {['5','10','all'].map(v => (
+                <button key={v} className={`tr-top-btn${topPelat===v?' tr-top-btn--active':''}`}
+                  onClick={() => setTopPelat(v)}>
+                  {v==='all'?'All':`Top ${v}`}
+                </button>
+              ))}
+            </div>
+          </div>
+          {pelatihanSliced.length === 0 ? <p className="tr-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={Math.max(200, pelatihanSliced.length*34)}>
+              <BarChart data={pelatihanSliced} layout="vertical" barCategoryGap="10%"
+                margin={{ top:0, right:55, left:0, bottom:0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#242424' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="pelatihan" tick={{ fontSize:11, fill:'#171717' }} width={185} axisLine={false} tickLine={false}/>
+                <Tooltip content={<CT/>}/>
+                <Bar dataKey="jumlah" name="Peserta" fill={RED} BarSize={30} radius={[0,4,4,0]} maxBarSize={30}
+                  label={{ position:'right', fontSize:11, fill:RED, fontWeight:600 }}/>
+              </BarChart>
+            </ResponsiveContainer>
           )}
         </div>
 
-      </div>
-
-      {/* Pelatihan terpopuler — full width */}
-      <div className="tr-card">
-        <p className="tr-ctitle">Jenis Pelatihan Terpopuler</p>
-        <p className="tr-cdesc">Nama pelatihan yang paling banyak diikuti</p>
-        {pelatihanS.length === 0 ? <p className="tr-nodata">Tidak ada data</p> : (
-          <ResponsiveContainer width="100%" height={Math.max(220, pelatihanS.length*32)}>
-            <BarChart data={pelatihanS} layout="vertical" barCategoryGap="28%"
-              margin={{ top:0, right:60, left:0, bottom:0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-              <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-              <YAxis type="category" dataKey="pelatihan" tick={{ fontSize:11, fill:'#444' }} width={185} axisLine={false} tickLine={false}/>
-              <Tooltip content={<CT/>}/>
-              <Bar dataKey="jumlah" name="Peserta" fill={RED} radius={[0,4,4,0]} maxBarSize={20}
-                label={{ position:'right', fontSize:11, fill:RED, fontWeight:600 }}/>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
       </div>
 
     </div>

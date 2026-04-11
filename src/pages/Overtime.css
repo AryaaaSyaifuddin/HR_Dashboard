@@ -1,32 +1,181 @@
-.ot-wrap{display:flex;flex-direction:column;gap:16px}
-.ot-loading,.ot-err{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:280px;color:#666;font-size:13px}
-.ot-spin{width:28px;height:28px;border:3px solid rgba(0,0,0,0.08);border-top-color:#060771;border-radius:50%;animation:otspin .7s linear infinite}
-@keyframes otspin{to{transform:rotate(360deg)}}
-.ot-err{color:#BF1A1A}
-.ot-err button{padding:6px 16px;border-radius:7px;border:0.5px solid #BF1A1A;background:transparent;color:#BF1A1A;font-size:12px;cursor:pointer}
+.ot-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ot-loading,
+.ot-err {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 280px;
+  color: #666;
+  font-size: 13px;
+}
+
+.ot-spin {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(0, 0, 0, 0.08);
+  border-top-color: #060771;
+  border-radius: 50%;
+  animation: otspin 0.7s linear infinite;
+}
+
+@keyframes otspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ot-err {
+  color: #bf1a1a;
+}
+
+.ot-err button {
+  padding: 6px 16px;
+  border-radius: 7px;
+  border: 0.5px solid #bf1a1a;
+  background: transparent;
+  color: #bf1a1a;
+  font-size: 12px;
+  cursor: pointer;
+}
 
 /* INFO BAR */
-.ot-info-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#e8e9f9;border-radius:8px;font-size:12px;color:#060771;font-weight:500}
+.ot-info-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #e8e9f9;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #060771;
+  font-weight: 500;
+}
 
-/* KPI — 2 baris (jam vs biaya), layout horizontal card */
-.ot-kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.ot-kcard{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px}
-.ot-kcard--jam{border-left:3px solid #060771}
-.ot-kcard--cost{border-left:3px solid #BF1A1A}
-.ot-kico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ot-klbl{font-size:11px;color:#666;margin-bottom:4px;font-weight:500}
-.ot-kval{font-size:20px;font-weight:600;color:#060771;line-height:1.2}
-.ot-kval--money{font-size:17px}
-.ot-kunit{font-size:12px;font-weight:400;color:#888;margin-left:2px}
-.ot-kbar{height:3px;border-radius:2px;width:100%;margin-top:10px;display:none}
+/* KPI */
+.ot-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ot-kcard {
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ot-kcard--jam {
+  border-left: 3px solid #060771;
+}
+
+.ot-kcard--cost {
+  border-left: 3px solid #bf1a1a;
+}
+
+.ot-kico {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ot-klbl {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.ot-kval {
+  font-size: 20px;
+  font-weight: 600;
+  color: #060771;
+  line-height: 1.2;
+}
+
+.ot-kval--money {
+  font-size: 17px;
+}
+
+.ot-kunit {
+  font-size: 12px;
+  font-weight: 400;
+  color: #888;
+  margin-left: 2px;
+}
+
+.ot-kbar {
+  height: 3px;
+  border-radius: 2px;
+  width: 100%;
+  margin-top: 10px;
+  display: none;
+}
 
 /* CARDS */
-.ot-card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px 20px 20px}
-.ot-ctitle{font-size:14px;font-weight:600;color:#060771;margin-bottom:2px}
-.ot-cdesc{font-size:12px;color:#666;margin-bottom:16px}
-.ot-nodata{font-size:13px;color:#666;text-align:center;padding:60px 20px}
-.ot-row2{display:grid;gap:16px}
+.ot-card {
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 16px 20px 20px;
+}
 
-@media(max-width:1200px){.ot-kpi-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:1024px){.ot-row2{grid-template-columns:1fr!important}}
-@media(max-width:768px){.ot-kpi-grid{grid-template-columns:1fr}}
+.ot-ctitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #060771;
+  margin-bottom: 2px;
+}
+
+.ot-cdesc {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.ot-nodata {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* ROW 2 — sekarang dua kolom seimbang */
+.ot-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Responsif */
+@media (max-width: 1200px) {
+  .ot-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ot-row2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .ot-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

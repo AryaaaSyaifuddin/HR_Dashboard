@@ -9,6 +9,7 @@ import ManPower from './pages/ManPower.jsx'
 import Internship from './pages/Internship.jsx'
 import Overtime from './pages/Overtime.jsx'
 import BPJS from './pages/BPJS.jsx'
+import MCU from './pages/MCU.jsx'
 import Salary from './pages/Salary.jsx'
 import KPI from './pages/KPI.jsx'
 import Training from './pages/Training.jsx'
@@ -26,6 +27,7 @@ const MENU = [
   { id: 'salary',      label: 'Salary & PPH21',         page: <Salary /> },
   { id: 'kpi',         label: 'KPI',                    page: <KPI /> },
   { id: 'training',    label: 'Ext / Int Training',     page: <Training /> },
+  { id: 'mcu',         label: 'MCU',                    page: <MCU /> },
 ]
 
 export default function App() {

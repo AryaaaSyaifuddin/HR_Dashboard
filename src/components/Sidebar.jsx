@@ -41,6 +41,13 @@ const ICONS = {
       <path d="M10 12h4M12 10v4" />
     </svg>
   ),
+  mcu: (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="5" y="4" width="14" height="16" rx="2.5" />
+      <path d="M9 4.8h6" />
+      <path d="M12 9v6M9 12h6" />
+    </svg>
+  ),
   salary: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <rect x="3.5" y="6" width="17" height="12" rx="2" />

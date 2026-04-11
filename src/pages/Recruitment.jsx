@@ -63,9 +63,9 @@ function Recruitment() {
 
   const { kpi, status, posisi, trend, funnel } = data
   const total  = kpi?.total || 0
-  const pctAcc = total ? Math.round(kpi.accepted   / total * 100) : 0
-  const pctOp  = total ? Math.round(kpi.on_process / total * 100) : 0
-  const pctRej = total ? Math.round(kpi.rejected   / total * 100) : 0
+  const pctAcc = total ? Math.round((kpi?.accepted || 0) / total * 100) : 0
+  const pctOp  = total ? Math.round((kpi?.on_process || 0) / total * 100) : 0
+  const pctRej = total ? Math.round((kpi?.rejected || 0) / total * 100) : 0
 
   // Clean NaN
   const cleanStatus  = (status||[]).map(d => ({ ...d, status: cleanVal(d.status) }))
@@ -122,23 +122,19 @@ function Recruitment() {
       <div className="rc-kpi-grid">
         {[
           { bg:'#e8e9f9', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" fill={NAVY}/><circle cx="17" cy="7" r="3" fill={NAVY} opacity=".4"/><path d="M1 20c0-4 3.6-7 8-7s8 3 8 7" fill={NAVY} opacity=".3"/></svg>, pct:'Total', pctC:NAVY, val:total, lbl:'Total Kandidat', bar:NAVY },
-          { bg:'#dcfce7', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, pct:`${pctAcc}%`, pctC:GREEN, val:kpi.accepted||0, lbl:'Accepted', bar:GREEN },
-          { bg:'#fff3e0', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke={ORANGE} strokeWidth="2" fill="none"/><path d="M12 7v5l3 3" stroke={ORANGE} strokeWidth="1.8" strokeLinecap="round"/></svg>, pct:`${pctOp}%`, pctC:ORANGE, val:kpi.on_process||0, lbl:'On Process', bar:ORANGE },
-          { bg:'#f9e8e8', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke={RED} strokeWidth="2" fill="none"/><path d="M15 9l-6 6M9 9l6 6" stroke={RED} strokeWidth="2" strokeLinecap="round"/></svg>, pct:`${pctRej}%`, pctC:RED, val:kpi.rejected||0, lbl:'Rejected', bar:RED },
+          { bg:'#dcfce7', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, pct:`${pctAcc}%`, pctC:GREEN, val:kpi?.accepted || 0, lbl:'Accepted', bar:GREEN },
+          { bg:'#fff3e0', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke={ORANGE} strokeWidth="2" fill="none"/><path d="M12 7v5l3 3" stroke={ORANGE} strokeWidth="1.8" strokeLinecap="round"/></svg>, pct:`${pctOp}%`, pctC:ORANGE, val:kpi?.on_process || 0, lbl:'On Process', bar:ORANGE },
+          { bg:'#f9e8e8', icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke={RED} strokeWidth="2" fill="none"/><path d="M15 9l-6 6M9 9l6 6" stroke={RED} strokeWidth="2" strokeLinecap="round"/></svg>, pct:`${pctRej}%`, pctC:RED, val:kpi?.rejected || 0, lbl:'Rejected', bar:RED },
         ].map((c,i) => (
-          <div className="tr-kpi6">
-          {[...kpiRows[0], ...kpiRows[1]].map((c, i) => (
-            <div key={i} className="tr-kcard">
-              <div className="tr-ktop">
-                <div className="tr-kico" style={{ background: c.bg }}>{c.icon}</div>
-                <span className="tr-kpct" style={{ color: c.pctC }}>{c.pct}</span>
+          <div key={i} className="rc-kpi-card">
+              <div className="rc-kpi-top">
+                <div className="rc-kpi-icon" style={{ background: c.bg }}>{c.icon}</div>
+                <span className="rc-kpi-pct" style={{ color: c.pctC }}>{c.pct}</span>
               </div>
-              <p className="tr-kval">{c.val}</p>
-              <p className="tr-klbl">{c.lbl}</p>
-              <div className="tr-kbar" style={{ background: c.bar }}/>
-            </div>
-          ))}
-        </div>
+              <p className="rc-kpi-value">{c.val}</p>
+              <p className="rc-kpi-label">{c.lbl}</p>
+              <div className="rc-kpi-bar" style={{ background: c.bar }}/>
+          </div>
         ))}
       </div>
 

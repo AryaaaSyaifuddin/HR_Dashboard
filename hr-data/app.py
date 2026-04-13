@@ -494,15 +494,42 @@ def recruitment_dashboard():
     df = get_recruitment_cached()
     df = apply_recruitment_filters(df)
     kpi = calculate_recruitment_kpi(df)
-    status = df['status'].value_counts().reset_index(); status.columns = ['status','jumlah']
-    posisi = df['posisi'].value_counts().reset_index(); posisi.columns = ['posisi','jumlah']
-    trend  = df['bulan'].value_counts().sort_index().reset_index(); trend.columns = ['bulan','jumlah']
+    
+    # Status dan posisi (tidak berubah)
+    status = df['status'].value_counts().reset_index()
+    status.columns = ['status','jumlah']
+    
+    posisi = df['posisi'].value_counts().reset_index()
+    posisi.columns = ['posisi','jumlah']
+    
+    # ========== PERUBAHAN DI SINI ==========
+    # Hitung tren per bulan dengan total dan accepted
+    # Group by bulan, hitung total dan yang accepted
+    trend_total = df.groupby('bulan').size().reset_index(name='jumlah')
+    trend_accepted = df[df['status'] == 'accepted'].groupby('bulan').size().reset_index(name='accepted')
+    
+    # Merge kedua dataframe
+    trend = pd.merge(trend_total, trend_accepted, on='bulan', how='left')
+    trend['accepted'] = trend['accepted'].fillna(0).astype(int)
+    
+    # URUTKAN berdasarkan bulan secara kronologis
+    # Konversi bulan string ke datetime untuk sorting
+    trend['_sort'] = pd.to_datetime(trend['bulan'], format='%B %Y', errors='coerce')
+    trend = trend.sort_values('_sort')
+    trend = trend.drop('_sort', axis=1)
+    # =======================================
+    
     funnel_order = ['on process','mcu','accepted','rejected','mengundurkan diri']
     fd = df['status'].value_counts()
     funnel = [{"status": f, "jumlah": int(fd.get(f, 0))} for f in funnel_order]
-    return jsonify({"kpi": kpi, "status": status.to_dict(orient='records'),
-                    "posisi": posisi.to_dict(orient='records'),
-                    "trend": trend.to_dict(orient='records'), "funnel": funnel})
+    
+    return jsonify({
+        "kpi": kpi, 
+        "status": status.to_dict(orient='records'),
+        "posisi": posisi.to_dict(orient='records'),
+        "trend": trend.to_dict(orient='records'),  # Sekarang punya 'bulan', 'jumlah', 'accepted'
+        "funnel": funnel
+    })
 
 @app.route("/salary/dashboard")
 def salary_dashboard():

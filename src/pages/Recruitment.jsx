@@ -338,10 +338,10 @@ function Recruitment() {
           <p className="rc-no-data">Tidak ada data tren</p>
         ) : (
           <>
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart 
                 data={sortedTrend} 
-                margin={{ top: 20, right: 30, left: 0, bottom: 60 }}
+                margin={{ top: 20, right: 30, left: 0, bottom: 15 }}
               >
                 <defs>
                   <linearGradient id="gradTotal" x1="0" y1="0" x2="0" y2="1">
@@ -359,9 +359,9 @@ function Recruitment() {
                 <XAxis
                   dataKey="bulan"
                   tick={{ fontSize: 11, fill: '#333' }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={70}
+                  angle={0}
+                  textAnchor="center"
+                  height={5}
                   axisLine={false}
                   tickLine={false}
                   interval={0}

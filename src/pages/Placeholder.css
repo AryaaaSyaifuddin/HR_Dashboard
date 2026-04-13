@@ -265,9 +265,9 @@
 }
 
 .ikpi-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
+    font-size: 13px;
+    color: #3b3b3b;
+    margin-bottom: 10px;
 }
 
 .ikpi-bar {

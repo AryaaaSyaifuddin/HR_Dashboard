@@ -8,7 +8,7 @@ import './KPI.css'
 const API_URL = 'http://127.0.0.1:5000/kpi/dashboard'
 const NAVY    = '#060771'
 const RED     = '#BF1A1A'
-const GREEN   = '#16a34a'
+const GREEN   = '#006c28'
 const ORANGE  = '#ea580c'
 const AMBER   = '#b45309'
 
@@ -71,7 +71,7 @@ function KPI() {
   const [data, setData]       = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState(null)
-  const [activeKPI, setActiveKPI] = useState(null)
+  const [expandedKPI, setExpandedKPI] = useState(null) // ganti activeKPI dengan expandedKPI
   const [filters, setFilters] = useState({ bulan: '', no: '', status: '' })
 
   const fetchData = useCallback(async (f = filters) => {
@@ -86,7 +86,7 @@ function KPI() {
       if (!res.ok) throw new Error('Gagal mengambil data')
       const json = await res.json()
       setData(json); setError(null)
-      if (!activeKPI && json.kpi_list?.length) setActiveKPI(json.kpi_list[0].no)
+      // jangan set expanded otomatis
     } catch (err) { setError(err.message) }
     finally { setLoading(false) }
   }, [filters])
@@ -111,8 +111,8 @@ function KPI() {
 
   const { summary, kpi_list, monthly_2026, status_trend, bulan_options } = data
 
-  // KPI aktif untuk detail panel
-  const detailKPI = kpi_list.find(k => k.no === activeKPI)
+  // KPI yang sedang di-expand (untuk menampilkan detail bulanan)
+  const expandedData = kpi_list.find(k => k.no === expandedKPI)
 
   // Chart status trend — sort chronological
   const statusChartData = [...status_trend].sort((a, b) => {
@@ -121,19 +121,13 @@ function KPI() {
     return parse(a.bulan) - parse(b.bulan)
   })
 
-  // Bar chart target vs aktual untuk KPI aktif
-  const detailBarData = (detailKPI?.monthly || []).map(m => {
-    const isPct = (detailKPI?.unit || '').toLowerCase().includes('%')
-    return {
-      bulan:  m.bulan,
-      target: m.target !== null ? parseFloat((m.target * (isPct ? 100 : 1)).toFixed(2)) : null,
-      actual: m.actual !== null ? parseFloat((m.actual * (isPct ? 100 : 1)).toFixed(2)) : null,
-      status: m.status
-    }
-  })
-
   // Warna achievement rate
   const achvColor = pct => pct >= 70 ? GREEN : pct >= 50 ? AMBER : RED
+
+  // Toggle expand/collapse baris KPI
+  const toggleExpand = (no) => {
+    setExpandedKPI(prev => prev === no ? null : no)
+  }
 
   return (
     <div className="kpi-wrap">
@@ -218,33 +212,33 @@ function KPI() {
         ))}
       </div>
 
-      {/* ── STACKED BAR: achievement per bulan ── */}
+      {/* ── GROUPED BAR CHART: achievement per bulan ── */}
       <div className="kpi-card">
         <p className="kpi-ctitle">Achievement per Bulan</p>
         <p className="kpi-cdesc">Jumlah KPI tercapai vs tidak tercapai tiap bulan (seluruh data)</p>
         {statusChartData.length === 0
           ? <p className="kpi-nodata">Tidak ada data</p>
           : (
-            <ResponsiveContainer width="100%" height={190}>
-              <BarChart data={statusChartData} barCategoryGap="40%"
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart data={statusChartData} barCategoryGap="40%" barGap={4}
                 margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
                 <XAxis dataKey="bulan" tick={{ fontSize: 12, fill: '#888' }} axisLine={false} tickLine={false}/>
                 <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} allowDecimals={false}/>
                 <Tooltip content={<CT/>}/>
                 <Legend wrapperStyle={{ fontSize: 12 }}/>
-                <Bar dataKey="tercapai" name="Tercapai" stackId="s" fill={GREEN} maxBarSize={70}/>
-                <Bar dataKey="tidak_tercapai" name="Tidak Tercapai" stackId="s" fill={RED} radius={[4, 4, 0, 0]} maxBarSize={70}/>
+                <Bar dataKey="tercapai" name="Tercapai" BarSize={70} fill={GREEN} maxBarSize={70} />
+                <Bar dataKey="tidak_tercapai" name="Tidak Tercapai" BarSize={70} fill={RED} maxBarSize={70} />
               </BarChart>
             </ResponsiveContainer>
           )
         }
       </div>
 
-      {/* ── TABEL KPI LIST + KLIK UNTUK DETAIL ── */}
+      {/* ── TABEL DAFTAR KPI DENGAN EXPANDABLE ROW ── */}
       <div className="kpi-card">
         <p className="kpi-ctitle">Daftar KPI &amp; Achievement Rate</p>
-        <p className="kpi-cdesc">Klik baris untuk melihat detail Target vs Aktual per bulan</p>
+        <p className="kpi-cdesc">Klik baris untuk melihat detail bulanan</p>
         <div className="kpi-table-wrap">
           <table className="kpi-table">
             <thead>
@@ -252,162 +246,88 @@ function KPI() {
                 <th style={{ width: 36 }}>No</th>
                 <th>Indikator</th>
                 <th>Target</th>
-                <th style={{ width: 80, textAlign: 'center' }}>Bulan</th>
+                <th style={{ width: 180, textAlign: 'center' }}>Bulan yang sudah berjalan</th>
                 <th style={{ width: 90, textAlign: 'center' }}>Tercapai</th>
                 <th style={{ width: 80, textAlign: 'center' }}>Rate</th>
               </tr>
             </thead>
             <tbody>
               {kpi_list.map(k => (
-                <tr key={k.no}
-                  className={`kpi-trow${activeKPI === k.no ? ' kpi-trow--active' : ''}`}
-                  onClick={() => setActiveKPI(k.no)}>
-                  <td style={{ color: '#888', textAlign: 'center' }}>{k.no}</td>
-                  <td>
-                    <span className="kpi-tname">{k.kpi}</span>
-                    <span className="kpi-tunit">{k.unit}</span>
-                  </td>
-                  <td className="kpi-ttarget">{k.target_desc}</td>
-                  <td style={{ textAlign: 'center' }}>{k.bulan_ada}</td>
-                  <td style={{ textAlign: 'center' }}>{k.bulan_ok} / {k.bulan_ada}</td>
-                  <td style={{ textAlign: 'center' }}>
-                    <RadialPct pct={k.pct_tercapai} color={achvColor(k.pct_tercapai)}/>
-                  </td>
-                </tr>
+                <>
+                  <tr key={k.no}
+                    className={`kpi-trow${expandedKPI === k.no ? ' kpi-trow--active' : ''}`}
+                    onClick={() => toggleExpand(k.no)}>
+                    <td style={{ color: '#888', textAlign: 'center' }}>{k.no}</td>
+                    <td>
+                      <span className="kpi-tname">{k.kpi}</span>
+                      <span className="kpi-tunit">{k.unit}</span>
+                    </td>
+                    <td className="kpi-ttarget">{k.target_desc}</td>
+                    <td style={{ textAlign: 'center' }}>{k.bulan_ada}</td>
+                    <td style={{ textAlign: 'center' }}>{k.bulan_ok} / {k.bulan_ada}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <RadialPct pct={k.pct_tercapai} color={achvColor(k.pct_tercapai)}/>
+                    </td>
+                  </tr>
+                  {/* Expanded row: tampilkan data bulanan */}
+                  {expandedKPI === k.no && (
+                    <tr className="kpi-expanded-row">
+                      <td colSpan={6} style={{ padding: 0 }}>
+                        <div style={{ padding: '12px 16px', background: '#fafbff' }}>
+                          {k.monthly?.length > 0 ? (
+                            <div className="kpi-mini-table-wrap">
+                              <table className="kpi-mini-table">
+                                <thead>
+                                  <tr>
+                                    <th>Bulan</th>
+                                    <th style={{ textAlign: 'right' }}>Target</th>
+                                    <th style={{ textAlign: 'right' }}>Aktual</th>
+                                    <th style={{ textAlign: 'center' }}>Gap</th>
+                                    <th style={{ textAlign: 'center' }}>Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {k.monthly.map((m, i) => {
+                                    const gap = m.actual !== null && m.target !== null
+                                      ? ((m.actual - m.target) * (k.unit.toLowerCase().includes('%') ? 100 : 1)).toFixed(2)
+                                      : null
+                                    const gapColor = gap === null ? '#888'
+                                      : k.is_lower_better
+                                        ? (Number(gap) <= 0 ? GREEN : RED)
+                                        : (Number(gap) >= 0 ? GREEN : RED)
+                                    return (
+                                      <tr key={i}>
+                                        <td>{m.bulan}</td>
+                                        <td style={{ textAlign: 'right' }} className="kpi-tcell-muted">
+                                          {fmtVal(m.target, k.unit)}
+                                        </td>
+                                        <td style={{ textAlign: 'right', fontWeight: 600 }}>
+                                          {fmtVal(m.actual, k.unit)}
+                                        </td>
+                                        <td style={{ textAlign: 'center', color: gapColor, fontWeight: 600 }}>
+                                          {gap !== null
+                                            ? `${Number(gap) >= 0 ? '+' : ''}${gap}${k.unit.toLowerCase().includes('%') ? '%' : ''}`
+                                            : '—'}
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}><Badge status={m.status}/></td>
+                                      </tr>
+                                    )
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <p className="kpi-nodata" style={{ padding: 20 }}>Tidak ada data bulanan</p>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* ── DETAIL KPI TERPILIH ── */}
-      {detailKPI && (
-        <div className="kpi-card kpi-detail-card">
-          <div className="kpi-detail-header">
-            <div>
-              <p className="kpi-ctitle">Detail KPI {detailKPI.no}: {detailKPI.kpi}</p>
-              <p className="kpi-cdesc">{detailKPI.target_desc} · {detailKPI.unit}</p>
-            </div>
-            <div className="kpi-detail-badges">
-              {detailKPI.is_lower_better
-                ? <span className="kpi-pill kpi-pill--blue">Lower is better</span>
-                : <span className="kpi-pill kpi-pill--navy">Higher is better</span>
-              }
-            </div>
-          </div>
-
-          {/* Bar chart Target vs Aktual per bulan */}
-          {detailBarData.length > 0 && (
-            <>
-              <p className="kpi-section-label">Target vs Aktual per Bulan</p>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={detailBarData} barCategoryGap="35%"
-                  margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-                  <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false}/>
-                  <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false}
-                    tickFormatter={v => detailKPI.unit.toLowerCase().includes('%') ? `${v}%` : v}/>
-                  <Tooltip content={<CT/>}/>
-                  <Legend wrapperStyle={{ fontSize: 12 }}/>
-                  <Bar dataKey="target" name="Target" fill={NAVY} fillOpacity={0.3} radius={[3, 3, 0, 0]} maxBarSize={50}/>
-                  <Bar dataKey="actual" name="Aktual" fill={NAVY} radius={[3, 3, 0, 0]} maxBarSize={50}
-                    label={{ position: 'top', fontSize: 11, fill: NAVY, fontWeight: 600,
-                      formatter: v => v !== null ? (detailKPI.unit.toLowerCase().includes('%') ? `${v}%` : v) : '' }}/>
-                </BarChart>
-              </ResponsiveContainer>
-            </>
-          )}
-
-          {/* Tabel mini bulan untuk KPI ini */}
-          {detailKPI.monthly?.length > 0 && (
-            <>
-              <p className="kpi-section-label" style={{ marginTop: 20 }}>Rekapitulasi per Bulan</p>
-              <div className="kpi-mini-table-wrap">
-                <table className="kpi-mini-table">
-                  <thead>
-                    <tr>
-                      <th>Bulan</th>
-                      <th style={{ textAlign: 'right' }}>Target</th>
-                      <th style={{ textAlign: 'right' }}>Aktual</th>
-                      <th style={{ textAlign: 'center' }}>Gap</th>
-                      <th style={{ textAlign: 'center' }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {detailKPI.monthly.map((m, i) => {
-                      const gap = m.actual !== null && m.target !== null
-                        ? ((m.actual - m.target) * (detailKPI.unit.toLowerCase().includes('%') ? 100 : 1)).toFixed(2)
-                        : null
-                      const gapColor = gap === null ? '#888'
-                        : detailKPI.is_lower_better
-                          ? (Number(gap) <= 0 ? GREEN : RED)
-                          : (Number(gap) >= 0 ? GREEN : RED)
-                      return (
-                        <tr key={i}>
-                          <td>{m.bulan}</td>
-                          <td style={{ textAlign: 'right' }} className="kpi-tcell-muted">
-                            {fmtVal(m.target, detailKPI.unit)}
-                          </td>
-                          <td style={{ textAlign: 'right', fontWeight: 600 }}>
-                            {fmtVal(m.actual, detailKPI.unit)}
-                          </td>
-                          <td style={{ textAlign: 'center', color: gapColor, fontWeight: 600 }}>
-                            {gap !== null
-                              ? `${Number(gap) >= 0 ? '+' : ''}${gap}${detailKPI.unit.toLowerCase().includes('%') ? '%' : ''}`
-                              : '—'}
-                          </td>
-                          <td style={{ textAlign: 'center' }}><Badge status={m.status}/></td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* ── TABEL LENGKAP monthly_2026 (terfilter) ── */}
-      <div className="kpi-card">
-        <p className="kpi-ctitle">Rekapitulasi Semua KPI</p>
-        <p className="kpi-cdesc">Seluruh data Target vs Aktual yang sesuai filter</p>
-        {monthly_2026.length === 0
-          ? <p className="kpi-nodata">Tidak ada data sesuai filter</p>
-          : (
-            <div className="kpi-table-wrap">
-              <table className="kpi-table">
-                <thead>
-                  <tr>
-                    <th>Bulan</th>
-                    <th>Indikator</th>
-                    <th style={{ textAlign: 'right' }}>Target</th>
-                    <th style={{ textAlign: 'right' }}>Aktual</th>
-                    <th style={{ textAlign: 'center' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {monthly_2026.map((r, i) => (
-                    <tr key={i}>
-                      <td className="kpi-tcell-muted">{r.bulan}</td>
-                      <td>
-                        <span className="kpi-tname">{r.kpi}</span>
-                        <span className="kpi-tunit">{r.unit}</span>
-                      </td>
-                      <td style={{ textAlign: 'right' }} className="kpi-tcell-muted">
-                        {fmtVal(r.target, r.unit)}
-                      </td>
-                      <td style={{ textAlign: 'right', fontWeight: 600 }}>
-                        {fmtVal(r.actual, r.unit)}
-                      </td>
-                      <td style={{ textAlign: 'center' }}><Badge status={r.status}/></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )
-        }
       </div>
 
     </div>

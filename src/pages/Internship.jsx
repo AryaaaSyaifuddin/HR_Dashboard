@@ -243,12 +243,12 @@ export default function Internship() {
             </div>
           </div>
           {penemSliced.length === 0 ? <p className="no-data">No Data Available</p> : (
-            <ResponsiveContainer width="100%" height={Math.max(200, penemSliced.length*34)}>
+            <ResponsiveContainer width="100%" height={Math.max(220, penemSliced.length*34)}>
               <BarChart data={penemSliced} layout="vertical" barCategoryGap="13%"
                 margin={{ top:0, right:50, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:"#2a2a2a" }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="penempatan" tick={{ fontSize:11, fill:"#202020" }} width={120} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:"#1f1f1f" }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="penempatan" tick={{ fontSize:11, fill:"#1a1a1a" }} width={120} axisLine={false} tickLine={false}/>
                 <Tooltip contentStyle={{ fontSize:12, borderRadius:8, border:"0.5px solid #e0e0e0" }}/>
                 <Bar dataKey="jumlah" name="Jumlah" fill={RED} BarSize={35} radius={[0,4,4,0]} maxBarSize={35}
                   label={{ position:'right', fontSize:11, fill:RED, fontWeight:600 }}/>

@@ -26,12 +26,12 @@
 .mp-kico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .mp-kpct{font-size:12px;font-weight:600}
 .mp-kval{font-size:26px;font-weight:600;color:#060771;line-height:1;margin-bottom:4px}
-.mp-klbl{font-size:11px;color:#666;margin-bottom:10px}
+.mp-klbl{font-size:15px;color:#202020;margin-bottom:10px}
 .mp-kbar{height:3px;border-radius:2px;width:100%}
 
 /* cards */
 .mp-card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px 20px 20px}
-.mp-ctitle{font-size:14px;font-weight:600;color:#060771;margin-bottom:2px}
+.mp-ctitle{font-size:20px;font-weight:700;color:#060771;margin-bottom:2px}
 .mp-cdesc{font-size:12px;color:#666;margin-bottom:16px}
 .mp-nodata{font-size:13px;color:#666;text-align:center;padding:60px 20px}
 

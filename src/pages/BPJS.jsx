@@ -262,7 +262,7 @@ function BPJS() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false} />
-              <XAxis dataKey="periode" tick={{ fontSize: 11, fill: '#888' }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false} />
+              <XAxis dataKey="periode" tick={{ fontSize: 11, fill: '#1d1d1d' }} angle={0} textAnchor="center" height={60} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => fmtShort(v)} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -299,8 +299,8 @@ function BPJS() {
           <ResponsiveContainer width="100%" height={Math.max(200, projectSliced.length * 34)}>
             <BarChart data={projectSliced} layout="vertical" barCategoryGap="13%" margin={{ top: 0, right: 50, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={120} axisLine={false} tickLine={false} />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#222222' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#2e2e2e' }} width={120} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="jumlah" name="Peserta" fill={NAVY} BarSize={35} radius={[0, 4, 4, 0]} maxBarSize={35}
                 label={{ position: 'right', fontSize: 11, fill: NAVY, fontWeight: 600 }} />

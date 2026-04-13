@@ -28,7 +28,7 @@ function Recruitment() {
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState(null)
   const [options, setOptions]   = useState({ posisi:[] })
-  const [topPosisi, setTopPosisi] = useState('all')
+  const [topPosisi, setTopPosisi] = useState('5')
   const [filters, setFilters]   = useState({ status:'', posisi:'', startMonth:'', endMonth:'' })
 
   const fetchData = useCallback(async (f = filters) => {
@@ -145,7 +145,7 @@ function Recruitment() {
         <p className="rc-card-title">Tren Rekrutmen per Bulan</p>
         <p className="rc-card-desc">Jumlah kandidat masuk proses rekrutmen setiap bulan</p>
         {(trend||[]).length === 0 ? <p className="rc-no-data">Tidak ada data</p> : (
-          <ResponsiveContainer width="100%" height={190}>
+          <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={trend} margin={{ top:8, right:16, left:0, bottom:40 }}>
               <defs>
                 <linearGradient id="gradRcT" x1="0" y1="0" x2="0" y2="1">
@@ -154,8 +154,8 @@ function Recruitment() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-              <XAxis dataKey="bulan" tick={{ fontSize:11, fill:'#888' }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
+              <XAxis dataKey="bulan" tick={{ fontSize:11, fill:'#222222' }} angle={0} textAnchor="center" height={5} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fontSize:11, fill:'#1e1e1e' }} axisLine={false} tickLine={false}/>
               <Tooltip content={<CT/>}/>
               <Area type="monotone" dataKey="jumlah" name="Kandidat" stroke={NAVY} strokeWidth={2} fill="url(#gradRcT)" dot={{ r:3, fill:NAVY, strokeWidth:0 }} activeDot={{ r:5 }}/>
             </AreaChart>
@@ -184,13 +184,13 @@ function Recruitment() {
           </div>
           {posisiSliced.length === 0 ? <p className="rc-no-data">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={posisiChartHeight}>
-              <BarChart data={posisiSliced} layout="vertical" barCategoryGap="16%"
+              <BarChart data={posisiSliced} layout="vertical" barCategoryGap="15%"
                 margin={{ top:0, right:55, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="posisi" tick={{ fontSize:11, fill:'#444' }} width={150} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#202020' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="posisi" tick={{ fontSize:11, fill:'#191919' }} width={150} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CT/>}/>
-                <Bar dataKey="jumlah" name="Kandidat" fill={NAVY} radius={[0,4,4,0]} maxBarSize={22}
+                <Bar dataKey="jumlah" name="Kandidat" fill={NAVY} BarSize={50} radius={[0,4,4,0]} maxBarSize={50}
                   label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
               </BarChart>
             </ResponsiveContainer>

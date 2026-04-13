@@ -44,7 +44,7 @@ function BPJS() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [options, setOptions] = useState({ project: [], periode: [] })
-  const [topProject, setTopProject] = useState('all')
+  const [topProject, setTopProject] = useState('5')
   const [filters, setFilters] = useState({ project: '', jenis_bpjs: '', periode: '' })
 
   const fetchData = useCallback(async (f = filters) => {
@@ -297,12 +297,12 @@ function BPJS() {
           <p className="bp-nodata">Tidak ada data</p>
         ) : (
           <ResponsiveContainer width="100%" height={Math.max(200, projectSliced.length * 34)}>
-            <BarChart data={projectSliced} layout="vertical" barCategoryGap="28%" margin={{ top: 0, right: 50, left: 0, bottom: 0 }}>
+            <BarChart data={projectSliced} layout="vertical" barCategoryGap="13%" margin={{ top: 0, right: 50, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={120} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="jumlah" name="Peserta" fill={NAVY} radius={[0, 4, 4, 0]} maxBarSize={22}
+              <Bar dataKey="jumlah" name="Peserta" fill={NAVY} BarSize={35} radius={[0, 4, 4, 0]} maxBarSize={35}
                 label={{ position: 'right', fontSize: 11, fill: NAVY, fontWeight: 600 }} />
             </BarChart>
           </ResponsiveContainer>

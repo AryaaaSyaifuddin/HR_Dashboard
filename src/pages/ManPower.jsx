@@ -168,8 +168,8 @@ function ManPower() {
               <BarChart data={topJabatan} layout="vertical" barCategoryGap="10%"
                 margin={{ top:0, right:40, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="jabatan" tick={{ fontSize:11, fill:'#555' }} width={100} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#222222' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="jabatan" tick={{ fontSize:11, fill:'#161616' }} width={100} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CT/>}/>
                 <Bar dataKey="jumlah" name="Jumlah" fill={NAVY} radius={[0,4,4,0]} maxBarSize={25}
                   label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
@@ -186,8 +186,8 @@ function ManPower() {
               <BarChart data={gpSorted} layout="vertical" barCategoryGap="10%"
                 margin={{ top:0, right:60, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="group_project" tick={{ fontSize:11, fill:'#444' }} width={145} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#292929' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="group_project" tick={{ fontSize:11, fill:'#202020' }} width={145} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CT/>}/>
                 <Bar dataKey="jumlah" name="Jumlah" fill={NAVY} radius={[0,4,4,0]} maxBarSize={30}
                   label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
@@ -207,8 +207,8 @@ function ManPower() {
             <BarChart data={branchSorted} barCategoryGap="5%"
               margin={{ top:4, right:8, left:0, bottom:60 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-              <XAxis dataKey="branch" tick={{ fontSize:10, fill:'#888' }} angle={-35} textAnchor="end" height={70} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
+              <XAxis dataKey="branch" tick={{ fontSize:10, fill:'#292929' }} angle={-35} textAnchor="end" height={70} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fontSize:11, fill:'#272727' }} axisLine={false} tickLine={false}/>
               <Tooltip content={<CT/>}/>
               <Bar dataKey="jumlah" name="Jumlah" fill={RED} radius={[4,4,0,0]} maxBarSize={40}
                 label={{ position:'top', fontSize:11, fill:RED, fontWeight:600 }}/>

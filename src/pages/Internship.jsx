@@ -21,7 +21,7 @@ export default function Internship() {
   })
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState(null)
-  const [topPenem, setTopPenem]   = useState('all')
+  const [topPenem, setTopPenem]   = useState('5')
   const [filters, setFilters]     = useState({ institusi:"", penempatan:"", status:"", start:"", end:"" })
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [dateRange, setDateRange] = useState([null, null])
@@ -141,8 +141,7 @@ export default function Internship() {
           { status:"ajukan ulang", bg:"#fff3e0", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5M20 20v-5h-5" stroke="#ea580c" strokeWidth="1.8" strokeLinecap="round"/><path d="M20 9A8 8 0 005.3 7.3M4 15a8 8 0 0014.7 1.7" stroke="#ea580c" strokeWidth="1.8" strokeLinecap="round"/></svg>, pct:`${toPercent(data.kpi.ajukan_ulang)}%`, pctC:"#ea580c", val:data.kpi.ajukan_ulang||0, lbl:"Ajukan Ulang", bar:"#ea580c" },
           { status:"selesai", bg:"#f9e8e8", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" fill="#BF1A1A" opacity=".8"/><path d="M8 6V5a4 4 0 018 0v1" fill="#BF1A1A"/></svg>, pct:`${toPercent(data.kpi.selesai)}%`, pctC:RED, val:data.kpi.selesai||0, lbl:"Selesai", bar:RED },
         ].map((c,i) => (
-          <button key={i} className={`ikpi-card${filters.status===c.status?' ikpi-card--active':''}`}
-            onClick={() => { setFilters(p => ({...p,status:c.status})); fetchDashboard({...filters,status:c.status}) }}>
+          <div key={i} className="ikpi-card">
             <div className="ikpi-top">
               <div className="ikpi-icon" style={{ background:c.bg }}>{c.icon}</div>
               <span className="ikpi-pct" style={{ color:c.pctC }}>{c.pct}</span>
@@ -150,7 +149,7 @@ export default function Internship() {
             <p className="ikpi-value">{c.val}</p>
             <p className="ikpi-label">{c.lbl}</p>
             <div className="ikpi-bar" style={{ background:c.bar }}/>
-          </button>
+          </div>
         ))}
       </div>
 
@@ -159,7 +158,7 @@ export default function Internship() {
         <p className="chart-title">Tren Permohonan Internship</p>
         <p className="chart-desc">Jumlah permohonan masuk per bulan</p>
         {data.permohonan.length === 0 ? <p className="no-data">No Data Available</p> : (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={150}>
             <AreaChart data={data.permohonan} margin={{ top:8, right:16, left:0, bottom:40 }}>
               <defs>
                 <linearGradient id="gradPermohonan" x1="0" y1="0" x2="0" y2="1">
@@ -168,8 +167,8 @@ export default function Internship() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-              <XAxis dataKey="bulan" tick={{ fontSize:11, fill:"#888" }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fontSize:11, fill:"#888" }} axisLine={false} tickLine={false}/>
+              <XAxis dataKey="bulan" tick={{ fontSize:11, fill:"#242424" }} angle={0} textAnchor="center" height={5} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fontSize:11, fill:"#272727" }} axisLine={false} tickLine={false}/>
               <Tooltip contentStyle={{ fontSize:12, borderRadius:8, border:"0.5px solid #e0e0e0" }}/>
               <Area type="monotone" dataKey="jumlah" name="Permohonan" stroke={RED} strokeWidth={2} fill="url(#gradPermohonan)" dot={{ r:3, fill:RED, strokeWidth:0 }} activeDot={{ r:5 }}/>
             </AreaChart>
@@ -245,13 +244,13 @@ export default function Internship() {
           </div>
           {penemSliced.length === 0 ? <p className="no-data">No Data Available</p> : (
             <ResponsiveContainer width="100%" height={Math.max(200, penemSliced.length*34)}>
-              <BarChart data={penemSliced} layout="vertical" barCategoryGap="25%"
+              <BarChart data={penemSliced} layout="vertical" barCategoryGap="13%"
                 margin={{ top:0, right:50, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:"#888" }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="penempatan" tick={{ fontSize:11, fill:"#444" }} width={120} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:"#2a2a2a" }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="penempatan" tick={{ fontSize:11, fill:"#202020" }} width={120} axisLine={false} tickLine={false}/>
                 <Tooltip contentStyle={{ fontSize:12, borderRadius:8, border:"0.5px solid #e0e0e0" }}/>
-                <Bar dataKey="jumlah" name="Jumlah" fill={RED} radius={[0,4,4,0]} maxBarSize={22}
+                <Bar dataKey="jumlah" name="Jumlah" fill={RED} BarSize={35} radius={[0,4,4,0]} maxBarSize={35}
                   label={{ position:'right', fontSize:11, fill:RED, fontWeight:600 }}/>
               </BarChart>
             </ResponsiveContainer>

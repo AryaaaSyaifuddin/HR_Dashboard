@@ -47,8 +47,8 @@ function Overtime() {
   const [error, setError] = useState(null)
   const [options, setOptions] = useState({ projects: [] })
   const [filters, setFilters] = useState({ project: '', start: '', end: '' })
-  const [topOv, setTopOv] = useState('all')
-  const [topCost, setTopCost] = useState('all')
+  const [topOv, setTopOv] = useState('5')
+  const [topCost, setTopCost] = useState('5')
 
   const fetchData = (q = {}) => {
     setLoading(true)
@@ -236,12 +236,12 @@ function Overtime() {
           </div>
           {topOvProject.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={Math.max(240, topOvProject.length * 28)}>
-              <BarChart data={topOvProject} layout="vertical" barCategoryGap="10%" margin={{ top: 0, right: 40, left: 0, bottom: 0 }}>
+              <BarChart data={topOvProject} layout="vertical" barCategoryGap="13%" margin={{ top: 0, right: 40, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} tickFormatter={v => v + '%'} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={130} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
-                <Bar dataKey="overtime_percent" name="Overtime %" fill={NAVY} radius={[0, 4, 4, 0]} maxBarSize={25}
+                <Bar dataKey="overtime_percent" name="Overtime %" fill={NAVY} BarSize={35} radius={[0, 4, 4, 0]} maxBarSize={35}
                   label={{ position: 'right', fontSize: 11, fill: NAVY, fontWeight: 600, formatter: v => v + '%' }} />
               </BarChart>
             </ResponsiveContainer>
@@ -266,12 +266,12 @@ function Overtime() {
           </div>
           {topCostProject.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={Math.max(240, topCostProject.length * 28)}>
-              <BarChart data={topCostProject} layout="vertical" barCategoryGap="10%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
+              <BarChart data={topCostProject} layout="vertical" barCategoryGap="13%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={130} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
-                <Bar dataKey="overtime_cost" name="Biaya Overtime" fill={RED} radius={[0, 4, 4, 0]} maxBarSize={25}
+                <Bar dataKey="overtime_cost" name="Biaya Overtime" fill={RED} BarSize={35} radius={[0, 4, 4, 0]} maxBarSize={35}
                   label={{ position: 'right', fontSize: 11, fill: RED, fontWeight: 600, formatter: v => fmtRupiah(v) }} />
               </BarChart>
             </ResponsiveContainer>

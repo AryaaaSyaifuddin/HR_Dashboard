@@ -43,8 +43,8 @@ function Salary() {
   const [error, setError] = useState(null)
   const [options, setOptions] = useState({ projects: [], periods: [] })
   const [filters, setFilters] = useState({ project: '', periode: '' })
-  const [topGaji, setTopGaji] = useState('all')
-  const [topPph, setTopPph] = useState('all')
+  const [topGaji, setTopGaji] = useState('5')
+  const [topPph, setTopPph] = useState('5')
 
   const fetchData = (q = {}) => {
     setLoading(true)
@@ -160,8 +160,8 @@ function Salary() {
               <AreaChart data={gaji_trend} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
                 <defs><linearGradient id="gajiGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={NAVY} stopOpacity={0.2} /><stop offset="100%" stopColor={NAVY} stopOpacity={0} /></linearGradient></defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" />
-                <XAxis dataKey="periode" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
+                <XAxis dataKey="periode" tick={{ fontSize: 11, fill: '#2a2a2a' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#1d1d1d' }} width={90} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
                 <Area type="monotone" dataKey="gaji" name="Total Gaji" stroke={NAVY} strokeWidth={2} fill="url(#gajiGrad)" dot={{ r: 3, fill: NAVY }} activeDot={{ r: 5 }} />
               </AreaChart>
@@ -177,8 +177,8 @@ function Salary() {
               <AreaChart data={pph_trend} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
                 <defs><linearGradient id="pphGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={RED} stopOpacity={0.2} /><stop offset="100%" stopColor={RED} stopOpacity={0} /></linearGradient></defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" />
-                <XAxis dataKey="periode" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
+                <XAxis dataKey="periode" tick={{ fontSize: 11, fill: '#202020' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#1c1c1c' }} width={80} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
                 <Area type="monotone" dataKey="pph21" name="PPh21" stroke={RED} strokeWidth={2} fill="url(#pphGrad)" dot={{ r: 3, fill: RED }} activeDot={{ r: 5 }} />
               </AreaChart>
@@ -207,12 +207,12 @@ function Salary() {
           </div>
           {gajiSliced.length === 0 ? <p className="sl-nodata">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={Math.max(240, gajiSliced.length * 28)}>
-              <BarChart data={gajiSliced} layout="vertical" barCategoryGap="10%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
+              <BarChart data={gajiSliced} layout="vertical" barCategoryGap="13%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={130} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
-                <Bar dataKey="gaji" name="Total Gaji" fill={NAVY} radius={[0, 4, 4, 0]} maxBarSize={25}
+                <Bar dataKey="gaji" name="Total Gaji" fill={NAVY} BarSize={35} radius={[0, 4, 4, 0]} maxBarSize={35}
                   label={{ position: 'right', fontSize: 11, fill: NAVY, fontWeight: 600, formatter: v => fmtRupiah(v) }} />
               </BarChart>
             </ResponsiveContainer>
@@ -237,12 +237,12 @@ function Salary() {
           </div>
           {pphSliced.length === 0 ? <p className="sl-nodata">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={Math.max(240, pphSliced.length * 28)}>
-              <BarChart data={pphSliced} layout="vertical" barCategoryGap="10%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
+              <BarChart data={pphSliced} layout="vertical" barCategoryGap="13%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={130} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={150} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
-                <Bar dataKey="pph21" name="PPh21" fill={RED} radius={[0, 4, 4, 0]} maxBarSize={25}
+                <Bar dataKey="pph21" name="PPh21" fill={RED} BarSize={35} radius={[0, 4, 4, 0]} maxBarSize={35}
                   label={{ position: 'right', fontSize: 11, fill: RED, fontWeight: 600, formatter: v => fmtRupiah(v) }} />
               </BarChart>
             </ResponsiveContainer>

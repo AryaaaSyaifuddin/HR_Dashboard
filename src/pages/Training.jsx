@@ -174,8 +174,8 @@ function Training() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-              <XAxis dataKey="bulan" tick={{ fontSize:11, fill:'#888' }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
+              <XAxis dataKey="bulan" tick={{ fontSize:11, fill:'#252525' }} angle={0} textAnchor="center" height={5} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fontSize:11, fill:'#292929' }} axisLine={false} tickLine={false}/>
               <Tooltip content={<CT/>}/>
               <Area type="monotone" dataKey="jumlah" name="Peserta" stroke={RED} strokeWidth={2}
                 fill="url(#gTr)" dot={{ r:3, fill:RED, strokeWidth:0 }} activeDot={{ r:5 }}/>

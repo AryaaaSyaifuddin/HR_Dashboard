@@ -37,6 +37,7 @@ function MCU() {
   const [error, setError]       = useState(null)
   const [options, setOptions]   = useState({ project:[] })
   const [topDivisi, setTopDivisi] = useState('5')
+  const [topBiayaProject, setTopBiayaProject] = useState('5')
   const [filters, setFilters]   = useState({ project:'', hasil:'', gender:'', startMonth:'', endMonth:'' })
 
   const fetchData = useCallback(async (f = filters) => {
@@ -92,6 +93,7 @@ function MCU() {
   const pieHasil   = hasilClean.map(d => ({ ...d, color: HASIL_C[d.hasil] || AMBER }))
   const pieGender  = genderClean.map((d,i) => ({ ...d, color: GENDER_C[d.gender.toLowerCase()] || [NAVY,RED,ORANGE][i%3] }))
   const cpSorted   = [...cpClean].sort((a,b) => b.pembayaran-a.pembayaran)
+  const cpSliced   = topBiayaProject==='5' ? cpSorted.slice(0,5) : topBiayaProject==='10' ? cpSorted.slice(0,10) : cpSorted
 
   return (
     <div className="mc-wrap">
@@ -234,14 +236,14 @@ function MCU() {
             </div>
           </div>
           {divisiSliced.length === 0 ? <p className="mc-nodata">Tidak ada data</p> : (
-            <ResponsiveContainer width="100%" height={Math.max(200, divisiSliced.length*34)}>
-              <BarChart data={divisiSliced} layout="vertical" barCategoryGap="25%"
+            <ResponsiveContainer width="100%" height={Math.max(220, divisiSliced.length*34)}>
+              <BarChart data={divisiSliced} layout="vertical" barCategoryGap="13%"
                 margin={{ top:0, right:50, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="divisi" tick={{ fontSize:11, fill:'#444' }} width={120} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#202020' }} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="divisi" tick={{ fontSize:11, fill:'#1b1b1b' }} width={120} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CT/>}/>
-                <Bar dataKey="jumlah" name="Peserta" fill={NAVY} radius={[0,4,4,0]} maxBarSize={22}
+                <Bar dataKey="jumlah" name="Peserta" fill={NAVY} BarSize={35} radius={[0,4,4,0]} maxBarSize={35}
                   label={{ position:'right', fontSize:11, fill:NAVY, fontWeight:600 }}/>
               </BarChart>
             </ResponsiveContainer>
@@ -281,17 +283,29 @@ function MCU() {
       <div className="mc-row2" style={{ gridTemplateColumns:'1fr 1.2fr' }}>
 
         <div className="mc-card">
-          <p className="mc-ctitle">Biaya MCU per Project</p>
-          <p className="mc-cdesc">Total biaya MCU yang dikeluarkan per project</p>
-          {cpSorted.length === 0 ? <p className="mc-nodata">Tidak ada data</p> : (
-            <ResponsiveContainer width="100%" height={Math.max(200, cpSorted.length*34)}>
-              <BarChart data={cpSorted} layout="vertical" barCategoryGap="28%"
+          <div className="mc-card-header">
+            <div>
+              <p className="mc-ctitle">Biaya MCU per Project</p>
+              <p className="mc-cdesc">Total biaya MCU yang dikeluarkan per project</p>
+            </div>
+            <div className="mc-top-toggle">
+              {['5','10','all'].map(v => (
+                <button key={v} className={`mc-top-btn${topBiayaProject===v?' mc-top-btn--active':''}`}
+                  onClick={() => setTopBiayaProject(v)}>
+                  {v==='all'?'All':`Top ${v}`}
+                </button>
+              ))}
+            </div>
+          </div>
+          {cpSliced.length === 0 ? <p className="mc-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={Math.max(220, cpSliced.length*34)}>
+              <BarChart data={cpSliced} layout="vertical" barCategoryGap="13%"
                 margin={{ top:0, right:20, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
-                <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} tickFormatter={v => fmt(v)} axisLine={false} tickLine={false}/>
-                <YAxis type="category" dataKey="project" tick={{ fontSize:11, fill:'#444' }} width={120} axisLine={false} tickLine={false}/>
+                <XAxis type="number" tick={{ fontSize:11, fill:'#252525' }} tickFormatter={v => fmt(v)} axisLine={false} tickLine={false}/>
+                <YAxis type="category" dataKey="project" tick={{ fontSize:11, fill:'#212121' }} width={120} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CTMoney/>}/>
-                <Bar dataKey="pembayaran" name="Biaya" fill={RED} radius={[0,4,4,0]} maxBarSize={22}/>
+                <Bar dataKey="pembayaran" name="Biaya" fill={RED} BarSize={35} radius={[0,4,4,0]} maxBarSize={35}/>
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -309,8 +323,8 @@ function MCU() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false}/>
-                <XAxis dataKey="periode" tick={{ fontSize:11, fill:'#888' }} angle={-35} textAnchor="end" height={60} axisLine={false} tickLine={false}/>
-                <YAxis tick={{ fontSize:10, fill:'#888' }} tickFormatter={v => fmt(v)} axisLine={false} tickLine={false}/>
+                <XAxis dataKey="periode" tick={{ fontSize:11, fill:'#111111' }} angle={-25} textAnchor="center" height={10} axisLine={false} tickLine={false}/>
+                <YAxis tick={{ fontSize:10, fill:'#212121' }} tickFormatter={v => fmt(v)} axisLine={false} tickLine={false}/>
                 <Tooltip content={<CTMoney/>}/>
                 <Area type="monotone" dataKey="pembayaran" name="Biaya MCU" stroke={RED} strokeWidth={2} fill="url(#gMcCost)" dot={{ r:3, fill:RED, strokeWidth:0 }} activeDot={{ r:5 }}/>
               </AreaChart>

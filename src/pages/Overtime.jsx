@@ -207,8 +207,8 @@ function Overtime() {
             <AreaChart data={costTrend} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
               <defs><linearGradient id="costGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={RED} stopOpacity={0.2} /><stop offset="100%" stopColor={RED} stopOpacity={0} /></linearGradient></defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" />
-              <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
+              <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#2c2c2c' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: '#202020' }} width={80} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
               <Tooltip content={<CT />} />
               <Area type="monotone" dataKey="overtime_cost" name="Biaya Overtime" stroke={RED} strokeWidth={2} fill="url(#costGrad)" dot={{ r: 3, fill: RED }} activeDot={{ r: 5 }} />
             </AreaChart>

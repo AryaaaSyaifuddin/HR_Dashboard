@@ -14,6 +14,16 @@ const NAVY    = '#060771', RED = '#BF1A1A'
 
 const cleanVal = v => (!v || v === 'nan' || v === 'NaN' || String(v).trim().toLowerCase() === 'nan') ? 'No Status' : v
 
+// Fungsi untuk mengurutkan data permohonan berdasarkan bulan
+const sortPermohonanByDate = (permohonanArray) => {
+  if (!permohonanArray || !permohonanArray.length) return []
+  return [...permohonanArray].sort((a, b) => {
+    const dateA = new Date(a.bulan)
+    const dateB = new Date(b.bulan)
+    return dateA - dateB
+  })
+}
+
 export default function Internship() {
   const [data, setData] = useState({
     kpi:{ onboard:0, butuh_surat_balasan:0, ajukan_ulang:0, selesai:0, akan_berakhir:0, total:0 },
@@ -40,7 +50,15 @@ export default function Internship() {
     if (queryParams.end)        params.append("end", queryParams.end)
     const url = params.toString() ? `${API_URL}?${params}` : API_URL
     axios.get(url)
-      .then(res => { setData(res.data); setError(null) })
+      .then(res => {
+        // Urutkan data permohonan berdasarkan tanggal
+        const sortedData = {
+          ...res.data,
+          permohonan: sortPermohonanByDate(res.data.permohonan)
+        }
+        setData(sortedData)
+        setError(null)
+      })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }

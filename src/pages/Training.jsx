@@ -61,7 +61,12 @@ function Training() {
   if (error)   return <div className="tr-wrap"><div className="tr-err"><p>Gagal: {error}</p><button onClick={() => fetchData()}>Coba lagi</button></div></div>
   if (!data)   return null
 
-  const { kpi, divisi, pelatihan, trend } = data
+  const { kpi, divisi, pelatihan } = data
+  const trend = [...(data.trend || [])].sort((a, b) => {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    const parse = s => { if (!s) return 0; const [m, y] = s.split(' '); return parseInt(y||'0')*12 + (months.indexOf(m)>=0 ? months.indexOf(m) : parseInt(m||'0')-1) }
+    return parse(a.bulan) - parse(b.bulan)
+  })
   const total     = kpi?.total      || 0
   const pctInt    = total ? Math.round(kpi.internal    / total * 100) : 0
   const pctExt    = total ? Math.round(kpi.external    / total * 100) : 0

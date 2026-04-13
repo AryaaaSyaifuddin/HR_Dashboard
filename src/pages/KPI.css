@@ -1,0 +1,96 @@
+/* ── WRAPPER ──────────────────────────────── */
+.kpi-wrap{display:flex;flex-direction:column;gap:16px}
+
+/* ── LOADING / ERROR ──────────────────────── */
+.kpi-loading,.kpi-err{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:280px;color:#666;font-size:13px}
+.kpi-spin{width:28px;height:28px;border:3px solid rgba(0,0,0,0.08);border-top-color:#060771;border-radius:50%;animation:kpispin .7s linear infinite}
+@keyframes kpispin{to{transform:rotate(360deg)}}
+.kpi-err{color:#BF1A1A}
+.kpi-err button{padding:6px 16px;border-radius:7px;border:0.5px solid #BF1A1A;background:transparent;color:#BF1A1A;font-size:12px;cursor:pointer}
+.kpi-err button:hover{background:#f9e8e8}
+
+/* ── FILTER ───────────────────────────────── */
+.kpi-filter{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:10px 14px}
+.kpi-fi{display:flex;align-items:center;gap:4px;flex:1;flex-wrap:wrap}
+.kpi-fg{display:flex;flex-direction:column;gap:2px}
+.kpi-fl{font-size:10px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.04em;padding-left:2px}
+.kpi-fs{border:0.5px solid rgba(0,0,0,0.08);border-radius:7px;background:#f4f4f6;color:#111;font-size:12px;font-family:inherit;padding:5px 10px;height:30px;outline:none;cursor:pointer;min-width:140px;transition:border-color .15s}
+.kpi-fs:focus{border-color:#060771;background:#fff}
+.kpi-fd{width:1px;height:28px;background:rgba(0,0,0,0.08);margin:0 8px;flex-shrink:0;align-self:flex-end;margin-bottom:2px}
+.kpi-fa{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.kpi-br{background:transparent;border:0.5px solid rgba(0,0,0,0.08);border-radius:7px;color:#666;font-size:12px;font-family:inherit;padding:5px 12px;height:30px;cursor:pointer;transition:all .15s}
+.kpi-br:hover{border-color:#060771;color:#060771}
+.kpi-ba{background:#060771;border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:600;font-family:inherit;padding:5px 14px;height:30px;cursor:pointer;transition:background .15s}
+.kpi-ba:hover{background:#BF1A1A}
+
+/* ── SUMMARY CARDS (4 kolom) ─────────────── */
+.kpi-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi-scard{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px 16px}
+.kpi-scard-top{display:flex;align-items:center;justify-content:flex-start;margin-bottom:10px}
+.kpi-sico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.kpi-sval{font-size:26px;font-weight:600;line-height:1;margin-bottom:4px}
+.kpi-slbl{font-size:11px;color:#666;margin-bottom:4px}
+.kpi-ssub{font-size:10px;color:#999;margin-bottom:8px}
+.kpi-sbar{height:3px;border-radius:2px;width:100%;margin-top:8px}
+
+/* ── CARDS ────────────────────────────────── */
+.kpi-card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px 20px 20px}
+.kpi-ctitle{font-size:14px;font-weight:600;color:#060771;margin-bottom:2px}
+.kpi-cdesc{font-size:12px;color:#666;margin-bottom:16px}
+.kpi-nodata{font-size:13px;color:#888;text-align:center;padding:40px}
+
+/* ── TABEL KPI LIST ───────────────────────── */
+.kpi-table-wrap{overflow-x:auto}
+.kpi-table{width:100%;border-collapse:collapse;font-size:12px}
+.kpi-table thead tr{background:#f7f8fc}
+.kpi-table th{padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#060771;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.kpi-table tbody tr{border-bottom:0.5px solid rgba(0,0,0,0.05);transition:background .12s}
+.kpi-table tbody tr:last-child{border-bottom:none}
+.kpi-trow{cursor:pointer}
+.kpi-trow:hover{background:#f4f5ff}
+.kpi-trow--active{background:#e8e9f9}
+.kpi-trow--active .kpi-tname{color:#060771;font-weight:600}
+.kpi-table td{padding:9px 12px;color:#333;vertical-align:middle}
+.kpi-tname{display:block;font-size:12px;color:#111;font-weight:500;line-height:1.4}
+.kpi-tunit{display:block;font-size:10px;color:#999;margin-top:1px}
+.kpi-ttarget{font-size:11px;color:#666;max-width:200px}
+.kpi-tcell-muted{color:#888}
+
+/* ── BADGE STATUS ─────────────────────────── */
+.kpi-badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;letter-spacing:.02em}
+.kpi-badge--green{background:#dcfce7;color:#15803d}
+.kpi-badge--red{background:#f9e8e8;color:#9b1c1c}
+.kpi-badge--gray{background:#f4f4f6;color:#888}
+
+/* ── PILL ─────────────────────────────────── */
+.kpi-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.kpi-pill--navy{background:#e8e9f9;color:#060771}
+.kpi-pill--blue{background:#e0f2fe;color:#0369a1}
+
+/* ── DETAIL CARD ──────────────────────────── */
+.kpi-detail-card{border:0.5px solid rgba(6,7,113,0.15)}
+.kpi-detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.kpi-detail-badges{display:flex;gap:6px;flex-shrink:0;padding-top:2px}
+.kpi-section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+
+/* ── MINI TABLE (rekapitulasi 2026 per KPI) ─ */
+.kpi-mini-table-wrap{overflow-x:auto}
+.kpi-mini-table{width:100%;border-collapse:collapse;font-size:12px;max-width:480px}
+.kpi-mini-table thead tr{background:#f7f8fc}
+.kpi-mini-table th{padding:7px 12px;text-align:left;font-size:11px;font-weight:600;color:#060771;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.kpi-mini-table tbody tr{border-bottom:0.5px solid rgba(0,0,0,0.05)}
+.kpi-mini-table tbody tr:last-child{border-bottom:none}
+.kpi-mini-table td{padding:7px 12px;color:#333}
+
+/* ── RESPONSIVE ───────────────────────────── */
+@media(max-width:1200px){.kpi-summary-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .kpi-filter{flex-direction:column;align-items:flex-start}
+  .kpi-fa{width:100%;justify-content:flex-end}
+  .kpi-summary-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi-fi{flex-direction:column;align-items:stretch}
+  .kpi-fd{display:none}
+  .kpi-fs{min-width:0;width:100%}
+  .kpi-detail-header{flex-direction:column}
+}
+@media(max-width:480px){.kpi-summary-grid{grid-template-columns:1fr}}

@@ -45,7 +45,139 @@
 .bp-lname{font-size:12px;color:#111}
 .bp-lval{font-size:12px;font-weight:600;color:#060771}
 
+/* KPI Card dengan persentase (sama seperti Manpower) */
+.mp-kpi4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mp-kcard {
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mp-ktop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.mp-kico {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-kpct {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mp-kval {
+  font-size: 22px;
+  font-weight: 600;
+  color: #060771;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.mp-klbl {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.mp-kbar {
+  height: 3px;
+  border-radius: 2px;
+  width: 100%;
+}
+
+/* Tooltip */
+.bp-tooltip {
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.bp-tooltip-label {
+  font-weight: 600;
+  color: #060771;
+  margin-bottom: 4px;
+}
+
+/* Responsif */
+@media (max-width: 1200px) {
+  .mp-kpi4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .mp-kpi4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tambahan untuk row dua kolom */
+.bp-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Tooltip custom */
+.bp-tooltip {
+  background: #fff;
+  border: 0.5px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.bp-tooltip-label {
+  font-weight: 600;
+  color: #060771;
+  margin-bottom: 4px;
+}
+
+/* Perbaikan responsif */
+@media (max-width: 1024px) {
+  .bp-row2 {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media(max-width:1200px){.bp-kpi-layout{grid-template-columns:1fr 1fr}}
 @media(max-width:1024px){.bp-row2{grid-template-columns:1fr!important}}
 @media(max-width:768px){.bp-filter{flex-direction:column;align-items:flex-start}.bp-fa{width:100%;justify-content:flex-end}.bp-kpi-layout{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.bp-kpi-layout{grid-template-columns:1fr}.bp-fi{flex-direction:column;align-items:stretch}.bp-fd{display:none}}
+
+/* KPI 4 kolom seragam */
+.bp-kpi4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.bp-kcard{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px 16px}
+.bp-kico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.bp-klbl{font-size:11px;color:#666;margin-bottom:4px;font-weight:500}
+.bp-kval{font-size:22px;font-weight:600;color:#060771;line-height:1.2;margin-bottom:10px}
+.bp-kbar{height:3px;border-radius:2px;width:100%}
+
+/* card header + top toggle */
+.bp-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.bp-top-toggle{display:flex;gap:4px;flex-shrink:0;margin-bottom:12px}
+.bp-top-btn{padding:4px 9px;border-radius:6px;font-size:11px;font-weight:500;border:0.5px solid rgba(0,0,0,0.08);background:#f4f4f6;color:#666;cursor:pointer;transition:all .15s}
+.bp-top-btn:hover{border-color:#060771;color:#060771}
+.bp-top-btn--active{background:#060771;color:white;border-color:#060771}
+
+@media(max-width:1200px){.bp-kpi4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.bp-kpi4{grid-template-columns:1fr}}

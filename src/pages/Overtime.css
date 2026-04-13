@@ -1,181 +1,86 @@
-.ot-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.ot-wrap { display: flex; flex-direction: column; gap: 16px; }
+.ot-loading, .ot-err { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 280px; color: #666; font-size: 13px; }
+.ot-spin { width: 28px; height: 28px; border: 3px solid rgba(0,0,0,0.08); border-top-color: #060771; border-radius: 50%; animation: otspin .7s linear infinite; }
+@keyframes otspin { to { transform: rotate(360deg); } }
+.ot-err { color: #BF1A1A; }
+.ot-err button { padding: 6px 16px; border-radius: 7px; border: 0.5px solid #BF1A1A; background: transparent; color: #BF1A1A; font-size: 12px; cursor: pointer; }
 
-.ot-loading,
-.ot-err {
+/* Filter */
+.ot-filter { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 14px; }
+.ot-fi { display: flex; align-items: center; gap: 4px; flex: 1; flex-wrap: wrap; }
+.ot-fg { display: flex; flex-direction: column; gap: 2px; }
+.ot-fl { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: .04em; padding-left: 2px; }
+.ot-fs { border: 0.5px solid rgba(0,0,0,0.08); border-radius: 7px; background: #f4f4f6; color: #111; font-size: 12px; font-family: inherit; padding: 5px 10px; height: 30px; outline: none; cursor: pointer; transition: border-color .15s; }
+.ot-fs:focus { border-color: #060771; background: #fff; }
+.ot-fd { width: 1px; height: 28px; background: rgba(0,0,0,0.08); margin: 0 6px; flex-shrink: 0; align-self: flex-end; margin-bottom: 2px; }
+.ot-fa { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ot-br { background: transparent; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 7px; color: #666; font-size: 12px; font-family: inherit; padding: 5px 12px; height: 30px; cursor: pointer; transition: all .15s; }
+.ot-br:hover { border-color: #060771; color: #060771; }
+.ot-ba { background: #060771; border: none; border-radius: 7px; color: white; font-size: 12px; font-weight: 600; font-family: inherit; padding: 5px 14px; height: 30px; cursor: pointer; transition: background .15s; }
+.ot-ba:hover { background: #BF1A1A; }
+
+/* KPI Cards */
+.ot-kpi4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ot-kcard { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 14px 16px; }
+.ot-ktop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ot-kico { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ot-kpct { font-size: 12px; font-weight: 600; }
+.ot-kval { font-size: 24px; font-weight: 600; color: #060771; line-height: 1.2; margin-bottom: 4px; }
+.ot-klbl { font-size: 11px; color: #666; margin-bottom: 10px; }
+.ot-kbar { height: 3px; border-radius: 2px; width: 100%; }
+
+/* Cards */
+.ot-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 16px 20px 20px; }
+.ot-ctitle { font-size: 14px; font-weight: 600; color: #060771; margin-bottom: 2px; }
+.ot-cdesc { font-size: 12px; color: #666; margin-bottom: 16px; }
+.ot-nodata { font-size: 13px; color: #666; text-align: center; padding: 60px 20px; }
+
+/* Row 2 kolom */
+.ot-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* card header + top toggle */
+.ot-card-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 12px;
-  height: 280px;
-  color: #666;
-  font-size: 13px;
+  margin-bottom: 12px;
 }
-
-.ot-spin {
-  width: 28px;
-  height: 28px;
-  border: 3px solid rgba(0, 0, 0, 0.08);
-  border-top-color: #060771;
-  border-radius: 50%;
-  animation: otspin 0.7s linear infinite;
-}
-
-@keyframes otspin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.ot-err {
-  color: #bf1a1a;
-}
-
-.ot-err button {
-  padding: 6px 16px;
-  border-radius: 7px;
-  border: 0.5px solid #bf1a1a;
-  background: transparent;
-  color: #bf1a1a;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-/* INFO BAR */
-.ot-info-bar {
+.ot-top-toggle {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: #e8e9f9;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #060771;
-  font-weight: 500;
-}
-
-/* KPI */
-.ot-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.ot-kcard {
-  background: #fff;
-  border: 0.5px solid rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.ot-kcard--jam {
-  border-left: 3px solid #060771;
-}
-
-.ot-kcard--cost {
-  border-left: 3px solid #bf1a1a;
-}
-
-.ot-kico {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 4px;
   flex-shrink: 0;
 }
-
-.ot-klbl {
+.ot-top-btn {
+  padding: 4px 9px;
+  border-radius: 6px;
   font-size: 11px;
-  color: #666;
-  margin-bottom: 4px;
   font-weight: 500;
-}
-
-.ot-kval {
-  font-size: 20px;
-  font-weight: 600;
-  color: #060771;
-  line-height: 1.2;
-}
-
-.ot-kval--money {
-  font-size: 17px;
-}
-
-.ot-kunit {
-  font-size: 12px;
-  font-weight: 400;
-  color: #888;
-  margin-left: 2px;
-}
-
-.ot-kbar {
-  height: 3px;
-  border-radius: 2px;
-  width: 100%;
-  margin-top: 10px;
-  display: none;
-}
-
-/* CARDS */
-.ot-card {
-  background: #fff;
-  border: 0.5px solid rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
-  padding: 16px 20px 20px;
-}
-
-.ot-ctitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: #060771;
-  margin-bottom: 2px;
-}
-
-.ot-cdesc {
-  font-size: 12px;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  background: #f4f4f6;
   color: #666;
-  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ot-top-btn:hover {
+  border-color: #060771;
+  color: #060771;
+}
+.ot-top-btn--active {
+  background: #060771;
+  color: white;
+  border-color: #060771;
 }
 
-.ot-nodata {
-  font-size: 13px;
-  color: #666;
-  text-align: center;
-  padding: 60px 20px;
-}
-
-/* ROW 2 — sekarang dua kolom seimbang */
-.ot-row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-/* Responsif */
-@media (max-width: 1200px) {
-  .ot-kpi-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 1024px) {
-  .ot-row2 {
-    grid-template-columns: 1fr !important;
-  }
-}
-
+/* Responsive */
+@media (max-width: 1200px) { .ot-kpi4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1024px) { .ot-row2 { grid-template-columns: 1fr; } }
 @media (max-width: 768px) {
-  .ot-kpi-grid {
-    grid-template-columns: 1fr;
-  }
+  .ot-filter { flex-direction: column; align-items: flex-start; }
+  .ot-fa { width: 100%; justify-content: flex-end; }
+  .ot-kpi4 { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .ot-fi { flex-direction: column; align-items: stretch; }
+  .ot-fd { display: none; }
 }

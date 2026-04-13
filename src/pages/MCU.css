@@ -1,0 +1,59 @@
+.mc-wrap{display:flex;flex-direction:column;gap:16px}
+.mc-loading,.mc-err{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:280px;color:#666;font-size:13px}
+.mc-spin{width:28px;height:28px;border:3px solid rgba(0,0,0,0.08);border-top-color:#060771;border-radius:50%;animation:mcspin .7s linear infinite}
+@keyframes mcspin{to{transform:rotate(360deg)}}
+.mc-err{color:#BF1A1A}
+.mc-err button{padding:6px 16px;border-radius:7px;border:0.5px solid #BF1A1A;background:transparent;color:#BF1A1A;font-size:12px;cursor:pointer}
+
+/* FILTER */
+.mc-filter{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:10px 14px}
+.mc-fi{display:flex;align-items:center;gap:4px;flex:1;flex-wrap:wrap}
+.mc-fg{display:flex;flex-direction:column;gap:2px}
+.mc-fl{font-size:10px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.04em;padding-left:2px}
+.mc-fs{border:0.5px solid rgba(0,0,0,0.08);border-radius:7px;background:#f4f4f6;color:#111;font-size:12px;font-family:inherit;padding:5px 10px;height:30px;outline:none;cursor:pointer}
+.mc-fs:focus{border-color:#060771;background:#fff}
+.mc-fd{width:1px;height:28px;background:rgba(0,0,0,0.08);margin:0 6px;flex-shrink:0;align-self:flex-end;margin-bottom:2px}
+.mc-fa{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mc-br{background:transparent;border:0.5px solid rgba(0,0,0,0.08);border-radius:7px;color:#666;font-size:12px;font-family:inherit;padding:5px 12px;height:30px;cursor:pointer}
+.mc-br:hover{border-color:#060771;color:#060771}
+.mc-ba{background:#060771;border:none;border-radius:7px;color:white;font-size:12px;font-weight:600;font-family:inherit;padding:5px 14px;height:30px;cursor:pointer}
+.mc-ba:hover{background:#BF1A1A}
+
+/* KPI 5 kolom */
+.mc-kpi5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.mc-kcard{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px 16px}
+.mc-ktop{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mc-kico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-kpct{font-size:12px;font-weight:600}
+.mc-kval{font-size:22px;font-weight:600;color:#060771;line-height:1.2;margin-bottom:4px;word-break:break-all}
+.mc-klbl{font-size:11px;color:#666;margin-bottom:10px}
+.mc-kbar{height:3px;border-radius:2px;width:100%}
+
+/* CARDS */
+.mc-card{background:#fff;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:16px 20px 20px}
+.mc-ctitle{font-size:14px;font-weight:600;color:#060771;margin-bottom:2px}
+.mc-cdesc{font-size:12px;color:#666;margin-bottom:16px}
+.mc-nodata{font-size:13px;color:#666;text-align:center;padding:60px 20px}
+
+.mc-row2{display:grid;gap:16px}
+
+/* card header + top toggle */
+.mc-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mc-top-toggle{display:flex;gap:4px;flex-shrink:0;margin-bottom:12px}
+.mc-top-btn{padding:4px 9px;border-radius:6px;font-size:11px;font-weight:500;border:0.5px solid rgba(0,0,0,0.08);background:#f4f4f6;color:#666;cursor:pointer;transition:all .15s}
+.mc-top-btn:hover{border-color:#060771;color:#060771}
+.mc-top-btn--active{background:#060771;color:white;border-color:#060771}
+
+/* LEGEND */
+.mc-leg{border-top:0.5px solid rgba(0,0,0,0.08);padding-top:10px;display:flex;flex-direction:column;gap:7px}
+.mc-litem{display:flex;align-items:center;justify-content:space-between}
+.mc-lleft{display:flex;align-items:center;gap:8px}
+.mc-ldot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.mc-lname{font-size:12px;color:#111}
+.mc-lval{font-size:12px;font-weight:600;color:#060771}
+
+/* RESPONSIVE */
+@media(max-width:1200px){.mc-kpi5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1024px){.mc-row2{grid-template-columns:1fr!important}.mc-kpi5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.mc-filter{flex-direction:column;align-items:flex-start}.mc-fa{width:100%;justify-content:flex-end}.mc-kpi5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.mc-kpi5{grid-template-columns:1fr}.mc-fi{flex-direction:column;align-items:stretch}.mc-fd{display:none}}

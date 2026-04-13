@@ -75,6 +75,8 @@ function Recruitment() {
   const pieStatus    = cleanStatus.map((d,i) => ({ ...d, color: STATUS_PC[i%STATUS_PC.length] }))
   const posisiSorted = [...cleanPosisi].sort((a,b) => b.jumlah-a.jumlah)
   const posisiSliced = topPosisi === '5' ? posisiSorted.slice(0,5) : topPosisi === '10' ? posisiSorted.slice(0,10) : posisiSorted
+  const statusContentHeight = 180 + (pieStatus.length * 31)
+  const posisiChartHeight = Math.max(150, posisiSliced.length * 30 + 12, statusContentHeight)
 
   return (
     <div className="rc-wrapper">
@@ -181,8 +183,8 @@ function Recruitment() {
             </div>
           </div>
           {posisiSliced.length === 0 ? <p className="rc-no-data">Tidak ada data</p> : (
-            <ResponsiveContainer width="100%" height={Math.max(200, posisiSliced.length*36)}>
-              <BarChart data={posisiSliced} layout="vertical" barCategoryGap="28%"
+            <ResponsiveContainer width="100%" height={posisiChartHeight}>
+              <BarChart data={posisiSliced} layout="vertical" barCategoryGap="16%"
                 margin={{ top:0, right:55, left:0, bottom:0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false}/>
                 <XAxis type="number" tick={{ fontSize:11, fill:'#888' }} axisLine={false} tickLine={false}/>

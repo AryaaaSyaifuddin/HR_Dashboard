@@ -1,367 +1,279 @@
-import { useState, useEffect, memo } from 'react'
+import { useEffect, useState, memo } from 'react'
+import axios from 'axios'
 import {
-  AreaChart, Area, BarChart, Bar, Line, ComposedChart,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis,
+  CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import './Overtime.css'
 
 const API_URL = 'http://127.0.0.1:5000/overtime/dashboard'
-const NAVY = '#060771'
-const RED = '#BF1A1A'
-const AMBER = '#b45309'
+const NAVY = '#060771', RED = '#BF1A1A', GREEN = '#16a34a', ORANGE = '#ea580c', TEAL = '#0f766e'
 
-const fmt = n =>
-  new Intl.NumberFormat('id-ID', {
-    notation: 'compact',
-    compactDisplay: 'short',
-  }).format(n)
+// Helper format Rupiah
+const fmtRupiah = (n) => {
+  if (n == null || isNaN(n)) return 'Rp 0'
+  return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(n))
+}
 
-const fmtFull = n => 'Rp ' + new Intl.NumberFormat('id-ID').format(n)
-
-const fmtDec = n => Number(n).toFixed(1)
-
-const CT = ({ active, payload, label, money = false }) => {
+// Custom Tooltip yang sudah diperbaiki
+const CT = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div
-      style={{
-        background: '#fff',
-        border: '0.5px solid rgba(0,0,0,0.1)',
-        borderRadius: 8,
-        padding: '8px 12px',
-        fontSize: 12,
-      }}
-    >
-      {label && (
-        <p style={{ fontWeight: 600, color: NAVY, marginBottom: 4 }}>{label}</p>
-      )}
-      {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color || NAVY, margin: '2px 0' }}>
-          {p.name}:{' '}
-          <strong>{money ? fmtFull(p.value) : fmtDec(p.value)}</strong>
-        </p>
-      ))}
+    <div style={{ background: '#fff', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 8, padding: '8px 12px', fontSize: 12 }}>
+      {label && <p style={{ fontWeight: 600, color: NAVY, marginBottom: 4 }}>{label}</p>}
+      {payload.map((p, i) => {
+        let value = p.value
+        const name = p.name?.toLowerCase() || ''
+        if (name.includes('cost') || name.includes('biaya')) {
+          value = fmtRupiah(p.value)
+        } else if ((name.includes('overtime') || name.includes('absensi')) && !name.includes('cost')) {
+          value = (p.value * 100).toFixed(1) + '%'
+        } else {
+          value = p.value
+        }
+        return (
+          <p key={i} style={{ color: p.color || NAVY, margin: '2px 0' }}>
+            {p.name}: <strong>{value}</strong>
+          </p>
+        )
+      })}
     </div>
   )
 }
-const CTMoney = props => <CT {...props} money />
 
 function Overtime() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [options, setOptions] = useState({ projects: [] })
+  const [filters, setFilters] = useState({ project: '', start: '', end: '' })
+  const [topOv, setTopOv] = useState('all')
+  const [topCost, setTopCost] = useState('all')
 
-  const fetchData = () => {
+  const fetchData = (q = {}) => {
     setLoading(true)
-    fetch(API_URL)
-      .then(r => {
-        if (!r.ok) throw new Error('Gagal mengambil data')
-        return r.json()
-      })
-      .then(j => {
-        setData(j)
-        setError(null)
-      })
+    const params = new URLSearchParams()
+    if (q.project) params.append('project', q.project)
+    if (q.start)   params.append('start', q.start)
+    if (q.end)     params.append('end', q.end)
+    const url = params.toString() ? `${API_URL}?${params}` : API_URL
+    axios.get(url)
+      .then(res => { setData(res.data); setError(null) })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }
 
   useEffect(() => {
     fetchData()
+    axios.get(API_URL).then(res => {
+      const projects = [...new Set(res.data.overtime_by_project?.map(d => d.project) || [])]
+      setOptions({ projects })
+    }).catch(() => {})
   }, [])
 
-  if (loading)
-    return (
-      <div className="ot-wrap">
-        <div className="ot-loading">
-          <div className="ot-spin" />
-          <p>Memuat data...</p>
-        </div>
+  const setF = (k, v) => setFilters(p => ({ ...p, [k]: v }))
+  const apply = () => fetchData(filters)
+  const reset = () => {
+    const empty = { project: '', start: '', end: '' }
+    setFilters(empty)
+    fetchData(empty)
+  }
+
+  if (loading) return (
+    <div className="ot-wrap">
+      <div className="ot-loading">
+        <div className="ot-spin" />
+        <p>Memuat data...</p>
       </div>
-    )
-  if (error)
-    return (
-      <div className="ot-wrap">
-        <div className="ot-err">
-          <p>Gagal: {error}</p>
-          <button onClick={fetchData}>Coba lagi</button>
-        </div>
+    </div>
+  )
+  if (error) return (
+    <div className="ot-wrap">
+      <div className="ot-err">
+        <p>Gagal: {error}</p>
+        <button onClick={() => fetchData(filters)}>Coba lagi</button>
       </div>
-    )
+    </div>
+  )
   if (!data) return null
 
-  const {
-    kpi,
-    overtime_trend,
-    absensi_trend,
-    overtime_project,
-    overtime_cost,
-  } = data
+  const { kpi, overtime_summary, attendance_summary, overtime_by_project, cost_by_project, overtime_cost_trend } = data
 
-  // Gabungkan overtime trend + cost untuk composed chart
-  const trendMap = {}
-  ;(overtime_trend || []).forEach(d => {
-    trendMap[d.bulan] = { bulan: d.bulan, overtime: d.overtime, cost: 0 }
-  })
-  ;(overtime_cost || []).forEach(d => {
-    if (trendMap[d.bulan]) trendMap[d.bulan].cost = d.overtime_cost
-    else trendMap[d.bulan] = { bulan: d.bulan, overtime: 0, cost: d.overtime_cost }
-  })
-  const combinedTrend = Object.values(trendMap).sort((a, b) =>
-    a.bulan.localeCompare(b.bulan)
-  )
+  const ovSummary = overtime_summary || []
+  const attSummary = attendance_summary || []
+  const costTrend = overtime_cost_trend || []
 
-  // Ambil 10 proyek teratas berdasarkan jam lembur
-  const topProjects = [...(overtime_project || [])]
-    .sort((a, b) => b.overtime - a.overtime)
-    .slice(0, 10)
+  // 🔧 BUAT SALINAN ARRAY SEBELUM SORTING (HINDARI READ-ONLY ERROR)
+  const ovProjectSorted = [...(overtime_by_project || [])].sort((a, b) => b.overtime_percent - a.overtime_percent)
+  const costProjectSorted = [...(cost_by_project || [])].sort((a, b) => b.overtime_cost - a.overtime_cost)
+
+  // Slicing berdasarkan toggle
+  const topOvProject = topOv === '5' ? ovProjectSorted.slice(0, 5) : topOv === '10' ? ovProjectSorted.slice(0, 10) : ovProjectSorted
+  const topCostProject = topCost === '5' ? costProjectSorted.slice(0, 5) : topCost === '10' ? costProjectSorted.slice(0, 10) : costProjectSorted
 
   return (
     <div className="ot-wrap">
-      {/* Info bar */}
-      <div className="ot-info-bar">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke={NAVY} strokeWidth="1.8" fill="none" />
-          <path d="M12 8v4M12 16h.01" stroke={NAVY} strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-        <span>Data menampilkan seluruh periode yang tersedia</span>
+
+      {/* FILTER */}
+      <div className="ot-filter">
+        <div className="ot-fi">
+          <div className="ot-fg">
+            <label className="ot-fl">Project</label>
+            <select className="ot-fs" value={filters.project} onChange={e => setF('project', e.target.value)}>
+              <option value="">Semua Project</option>
+              {options.projects.map((v, i) => <option key={i} value={v}>{v}</option>)}
+            </select>
+          </div>
+          <div className="ot-fd" />
+          <div className="ot-fg">
+            <label className="ot-fl">Periode Mulai</label>
+            <input type="date" className="ot-fs" value={filters.start} onChange={e => setF('start', e.target.value)} />
+          </div>
+          <div className="ot-fd" />
+          <div className="ot-fg">
+            <label className="ot-fl">Periode Akhir</label>
+            <input type="date" className="ot-fs" value={filters.end} onChange={e => setF('end', e.target.value)} />
+          </div>
+        </div>
+        <div className="ot-fa">
+          <button className="ot-br" onClick={reset}>Reset</button>
+          <button className="ot-ba" onClick={apply}>Terapkan</button>
+        </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="ot-kpi-grid">
-        <div className="ot-kcard ot-kcard--jam">
-          <div className="ot-kico" style={{ background: '#e8e9f9' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke={NAVY} strokeWidth="2" fill="none" />
-              <path d="M12 7v5l3 3" stroke={NAVY} strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+      <div className="ot-kpi4">
+        {[
+          { bg: '#fff3e0', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 4 7-8" stroke={ORANGE} strokeWidth="2.2" strokeLinecap="round" fill="none" /></svg>, pct: kpi.overtime_growth ? `${kpi.overtime_growth > 0 ? '+' : ''}${kpi.overtime_growth}%` : '—', pctC: kpi.overtime_growth >= 0 ? GREEN : RED, val: `${kpi.avg_overtime_percent || 0}%`, lbl: 'Rata‑rata Overtime', bar: ORANGE },
+          { bg: '#dcfce7', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l6 3v5c0 4-2.5 7-6 8.5C8.5 18 6 15 6 11V6l6-3z" fill={GREEN} opacity=".8" /></svg>, pct: kpi.absensi_growth ? `${kpi.absensi_growth > 0 ? '+' : ''}${kpi.absensi_growth}%` : '—', pctC: kpi.absensi_growth >= 0 ? GREEN : RED, val: `${kpi.avg_absensi_percent || 0}%`, lbl: 'Rata‑rata Absensi', bar: GREEN },
+          { bg: '#f9e8e8', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" fill={RED} opacity=".8" /><path d="M8 6V5a4 4 0 018 0v1" fill={RED} /></svg>, pct: 'Total', pctC: RED, val: fmtRupiah(kpi.total_overtime_cost), lbl: 'Total Biaya Overtime', bar: RED },
+          { bg: '#f0fdfa', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke={TEAL} strokeWidth="2" strokeLinecap="round" fill="none" /></svg>, pct: 'All', pctC: TEAL, val: fmtRupiah(kpi.total_cost), lbl: 'Total Biaya Keseluruhan', bar: TEAL },
+        ].map((c, i) => (
+          <div key={i} className="ot-kcard">
+            <div className="ot-ktop">
+              <div className="ot-kico" style={{ background: c.bg }}>{c.icon}</div>
+              <span className="ot-kpct" style={{ color: c.pctC }}>{c.pct}</span>
+            </div>
+            <p className="ot-kval">{c.val}</p>
+            <p className="ot-klbl">{c.lbl}</p>
+            <div className="ot-kbar" style={{ background: c.bar }} />
           </div>
-          <div>
-            <p className="ot-klbl">Rata-rata Overtime</p>
-            <p className="ot-kval">
-              {fmtDec(kpi?.avg_overtime || 0)}{' '}
-              <span className="ot-kunit">jam/bulan</span>
-            </p>
-          </div>
+        ))}
+      </div>
+
+      {/* ROW 1: Overtime & Attendance Trend */}
+      <div className="ot-row2">
+        <div className="ot-card">
+          <p className="ot-ctitle">Tren Overtime Bulanan</p>
+          <p className="ot-cdesc">Persentase rata‑rata overtime per bulan</p>
+          {ovSummary.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={ovSummary} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                <defs><linearGradient id="ovGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={ORANGE} stopOpacity={0.2} /><stop offset="100%" stopColor={ORANGE} stopOpacity={0} /></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" />
+                <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => (v * 100).toFixed(0) + '%'} axisLine={false} tickLine={false} />
+                <Tooltip content={<CT />} />
+                <Area type="monotone" dataKey="overtime" name="Overtime" stroke={ORANGE} strokeWidth={2} fill="url(#ovGrad)" dot={{ r: 3, fill: ORANGE }} activeDot={{ r: 5 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
-        <div className="ot-kcard ot-kcard--jam">
-          <div className="ot-kico" style={{ background: '#fef3c7' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="16" rx="2" stroke={AMBER} strokeWidth="1.8" fill="none" />
-              <path d="M3 9h18" stroke={AMBER} strokeWidth="1.5" />
-              <path d="M8 2v3M16 2v3" stroke={AMBER} strokeWidth="1.8" strokeLinecap="round" />
-              <path d="M8 14h2M12 14h2" stroke={AMBER} strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </div>
-          <div>
-            <p className="ot-klbl">Rata-rata Absensi</p>
-            <p className="ot-kval">
-              {fmtDec(kpi?.avg_absensi || 0)}{' '}
-              <span className="ot-kunit">hari/bulan</span>
-            </p>
-          </div>
-        </div>
-
-        <div className="ot-kcard ot-kcard--cost">
-          <div className="ot-kico" style={{ background: '#f9e8e8' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="6" width="20" height="13" rx="2" fill={RED} opacity=".8" />
-              <path d="M8 12h2M14 12h2M12 9v6" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </div>
-          <div>
-            <p className="ot-klbl">Total Cost</p>
-            <p className="ot-kval ot-kval--money">{fmtFull(kpi?.total_cost || 0)}</p>
-          </div>
-        </div>
-
-        <div className="ot-kcard ot-kcard--cost">
-          <div className="ot-kico" style={{ background: '#fff3e0' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M3 17l5-5 4 4 7-8" stroke="#ea580c" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            </svg>
-          </div>
-          <div>
-            <p className="ot-klbl">Overtime Cost</p>
-            <p className="ot-kval ot-kval--money" style={{ color: '#ea580c' }}>
-              {fmtFull(kpi?.overtime_cost || 0)}
-            </p>
-          </div>
+        <div className="ot-card">
+          <p className="ot-ctitle">Tren Absensi Bulanan</p>
+          <p className="ot-cdesc">Persentase rata‑rata kehadiran per bulan</p>
+          {attSummary.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={attSummary} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                <defs><linearGradient id="attGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={GREEN} stopOpacity={0.2} /><stop offset="100%" stopColor={GREEN} stopOpacity={0} /></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" />
+                <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => (v * 100).toFixed(0) + '%'} axisLine={false} tickLine={false} />
+                <Tooltip content={<CT />} />
+                <Area type="monotone" dataKey="absensi" name="Absensi" stroke={GREEN} strokeWidth={2} fill="url(#attGrad)" dot={{ r: 3, fill: GREEN }} activeDot={{ r: 5 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
+      {/* ROW 2: Overtime Cost Trend */}
       <div className="ot-card">
-        <p className="ot-ctitle">Tren Overtime & Biaya per Bulan</p>
-        <p className="ot-cdesc">
-          Rata‑rata jam lembur (area biru) dibandingkan dengan biaya overtime (area merah) tiap bulan
-        </p>
-        {combinedTrend.length === 0 ? (
-          <p className="ot-nodata">Tidak ada data</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <ComposedChart
-              data={combinedTrend}
-              margin={{ top: 8, right: 24, left: 10, bottom: 40 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false} />
-              <XAxis
-                dataKey="bulan"
-                tick={{ fontSize: 11, fill: '#888' }}
-                angle={-35}
-                textAnchor="end"
-                height={60}
-                axisLine={false}
-                tickLine={false}
-              />
-              {/* Sumbu Y kiri untuk Overtime (jam) */}
-              <YAxis
-                yAxisId="ot"
-                tick={{ fontSize: 10, fill: '#888' }}
-                axisLine={false}
-                tickLine={false}
-                label={{
-                  value: 'Jam',
-                  angle: -90,
-                  position: 'insideLeft',
-                  fontSize: 10,
-                  fill: '#aaa',
-                }}
-              />
-              {/* Sumbu Y kanan untuk Biaya (Rp) */}
-              <YAxis
-                yAxisId="cost"
-                orientation="right"
-                tick={{ fontSize: 10, fill: '#888' }}
-                tickFormatter={v => fmt(v)}
-                axisLine={false}
-                tickLine={false}
-              />
+        <p className="ot-ctitle">Tren Biaya Overtime</p>
+        <p className="ot-cdesc">Total biaya overtime per bulan</p>
+        {costTrend.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
+          <ResponsiveContainer width="100%" height={250}>
+            <AreaChart data={costTrend} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+              <defs><linearGradient id="costGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={RED} stopOpacity={0.2} /><stop offset="100%" stopColor={RED} stopOpacity={0} /></linearGradient></defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" />
+              <XAxis dataKey="bulan" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
               <Tooltip content={<CT />} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              {/* Area untuk Overtime (jam) */}
-              <Area
-                yAxisId="ot"
-                type="monotone"
-                dataKey="overtime"
-                name="Rata-rata OT (jam)"
-                stroke={NAVY}
-                strokeWidth={2}
-                fill={NAVY}
-                fillOpacity={0.2}
-                dot={{ r: 3, fill: NAVY, strokeWidth: 0 }}
-                activeDot={{ r: 5 }}
-              />
-              {/* Area untuk Biaya OT */}
-              <Area
-                yAxisId="cost"
-                type="monotone"
-                dataKey="cost"
-                name="Biaya OT"
-                stroke={RED}
-                strokeWidth={2}
-                fill={RED}
-                fillOpacity={0.15}
-                dot={{ r: 3, fill: RED, strokeWidth: 0 }}
-                activeDot={{ r: 5 }}
-              />
-            </ComposedChart>
+              <Area type="monotone" dataKey="overtime_cost" name="Biaya Overtime" stroke={RED} strokeWidth={2} fill="url(#costGrad)" dot={{ r: 3, fill: RED }} activeDot={{ r: 5 }} />
+            </AreaChart>
           </ResponsiveContainer>
         )}
       </div>
 
-      {/* Row 2 kolom: Top Project & Tren Absensi */}
+      {/* ROW 3: Overtime % per Project & Cost per Project (dengan toggle) */}
       <div className="ot-row2">
-        {/* Kolom Kiri: Top Project */}
+        {/* Overtime % per Project */}
         <div className="ot-card">
-          <p className="ot-ctitle">Top 10 Project – Rata‑rata Overtime</p>
-          <p className="ot-cdesc">Project dengan jam lembur rata‑rata tertinggi</p>
-          {topProjects.length === 0 ? (
-            <p className="ot-nodata">Tidak ada data</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={Math.max(240, topProjects.length * 36)}>
-              <BarChart
-                data={topProjects}
-                layout="vertical"
-                barCategoryGap="28%"
-                margin={{ top: 0, right: 60, left: 0, bottom: 0 }}
-              >
+          <div className="ot-card-header">
+            <div>
+              <p className="ot-ctitle">Persentase Overtime per Project</p>
+              <p className="ot-cdesc">Rata‑rata overtime per project</p>
+            </div>
+            <div className="ot-top-toggle">
+              {['5', '10', 'all'].map(v => (
+                <button key={v} className={`ot-top-btn ${topOv === v ? 'ot-top-btn--active' : ''}`}
+                  onClick={() => setTopOv(v)}>
+                  {v === 'all' ? 'All' : `Top ${v}`}
+                </button>
+              ))}
+            </div>
+          </div>
+          {topOvProject.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={Math.max(240, topOvProject.length * 28)}>
+              <BarChart data={topOvProject} layout="vertical" barCategoryGap="10%" margin={{ top: 0, right: 40, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
-                <XAxis
-                  type="number"
-                  tick={{ fontSize: 11, fill: '#888' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="project"
-                  tick={{ fontSize: 11, fill: '#444' }}
-                  width={120}
-                  axisLine={false}
-                  tickLine={false}
-                />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} tickFormatter={v => v + '%'} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={130} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
-                <Bar
-                  dataKey="overtime"
-                  name="OT (jam)"
-                  fill={NAVY}
-                  radius={[0, 4, 4, 0]}
-                  maxBarSize={20}
-                  label={{
-                    position: 'right',
-                    fontSize: 11,
-                    fill: NAVY,
-                    fontWeight: 600,
-                    formatter: v => fmtDec(v),
-                  }}
-                />
+                <Bar dataKey="overtime_percent" name="Overtime %" fill={NAVY} radius={[0, 4, 4, 0]} maxBarSize={25}
+                  label={{ position: 'right', fontSize: 11, fill: NAVY, fontWeight: 600, formatter: v => v + '%' }} />
               </BarChart>
             </ResponsiveContainer>
           )}
         </div>
 
-        {/* Kolom Kanan: Tren Absensi */}
+        {/* Biaya Overtime per Project */}
         <div className="ot-card">
-          <p className="ot-ctitle">Tren Absensi per Bulan</p>
-          <p className="ot-cdesc">Rata‑rata hari absensi karyawan setiap bulan</p>
-          {(absensi_trend || []).length === 0 ? (
-            <p className="ot-nodata">Tidak ada data</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart
-                data={absensi_trend}
-                margin={{ top: 8, right: 16, left: 0, bottom: 40 }}
-              >
-                <defs>
-                  <linearGradient id="gOtAbs" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={AMBER} stopOpacity={0.2} />
-                    <stop offset="100%" stopColor={AMBER} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" vertical={false} />
-                <XAxis
-                  dataKey="bulan"
-                  tick={{ fontSize: 11, fill: '#888' }}
-                  angle={-35}
-                  textAnchor="end"
-                  height={60}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+          <div className="ot-card-header">
+            <div>
+              <p className="ot-ctitle">Biaya Overtime per Project</p>
+              <p className="ot-cdesc">Total biaya overtime per project</p>
+            </div>
+            <div className="ot-top-toggle">
+              {['5', '10', 'all'].map(v => (
+                <button key={v} className={`ot-top-btn ${topCost === v ? 'ot-top-btn--active' : ''}`}
+                  onClick={() => setTopCost(v)}>
+                  {v === 'all' ? 'All' : `Top ${v}`}
+                </button>
+              ))}
+            </div>
+          </div>
+          {topCostProject.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
+            <ResponsiveContainer width="100%" height={Math.max(240, topCostProject.length * 28)}>
+              <BarChart data={topCostProject} layout="vertical" barCategoryGap="10%" margin={{ top: 0, right: 70, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f6" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#888' }} tickFormatter={v => fmtRupiah(v)} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="project" tick={{ fontSize: 11, fill: '#444' }} width={130} axisLine={false} tickLine={false} />
                 <Tooltip content={<CT />} />
-                <Area
-                  type="monotone"
-                  dataKey="absensi"
-                  name="Absensi (hari)"
-                  stroke={AMBER}
-                  strokeWidth={2}
-                  fill="url(#gOtAbs)"
-                  dot={{ r: 3, fill: AMBER, strokeWidth: 0 }}
-                  activeDot={{ r: 5 }}
-                />
-              </AreaChart>
+                <Bar dataKey="overtime_cost" name="Biaya Overtime" fill={RED} radius={[0, 4, 4, 0]} maxBarSize={25}
+                  label={{ position: 'right', fontSize: 11, fill: RED, fontWeight: 600, formatter: v => fmtRupiah(v) }} />
+              </BarChart>
             </ResponsiveContainer>
           )}
         </div>

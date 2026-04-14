@@ -40,6 +40,12 @@ export default function Internship() {
     status:["onboard","butuh surat balasan","ajukan ulang","selesai"]
   })
 
+  // State untuk modal detail (drill-down)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [detailData, setDetailData] = useState([])
+  const [detailTitle, setDetailTitle] = useState('')
+  const [detailLoading, setDetailLoading] = useState(false)
+
   const fetchDashboard = (queryParams = {}) => {
     setLoading(true)
     const params = new URLSearchParams()
@@ -51,7 +57,6 @@ export default function Internship() {
     const url = params.toString() ? `${API_URL}?${params}` : API_URL
     axios.get(url)
       .then(res => {
-        // Urutkan data permohonan berdasarkan tanggal
         const sortedData = {
           ...res.data,
           permohonan: sortPermohonanByDate(res.data.permohonan)
@@ -61,6 +66,46 @@ export default function Internship() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
+  }
+
+  // Fungsi untuk mengambil data detail (drill-down)
+  const fetchDetailRecords = async (kpiType, displayName) => {
+    setDetailLoading(true)
+    setDetailTitle(displayName)
+    setModalOpen(true)
+
+    try {
+      const params = new URLSearchParams()
+      if (filters.institusi) params.append("institusi", filters.institusi)
+      if (filters.penempatan) params.append("penempatan", filters.penempatan)
+      // ❌ JANGAN KIRIM STATUS: if (filters.status) params.append("status", filters.status)
+      if (filters.start) params.append("start", filters.start)
+      if (filters.end) params.append("end", filters.end)
+
+      const url = `http://127.0.0.1:5000/internship/records/${kpiType}?${params.toString()}`
+      const response = await axios.get(url)
+      setDetailData(response.data.data || [])
+    } catch (error) {
+      console.error('Error fetching detail:', error)
+      setDetailData([])
+    } finally {
+      setDetailLoading(false)
+    }
+  }
+
+  const handleCardClick = (status, label) => {
+    let kpiType = status
+    let displayName = label
+
+    if (status === '') {
+      kpiType = 'total'
+      displayName = 'Semua Intern'
+    } else if (status === 'akan_berakhir') {
+      kpiType = 'akan_berakhir'
+      displayName = 'Akan Berakhir (14 hari)'
+    }
+
+    fetchDetailRecords(kpiType, displayName)
   }
 
   useEffect(() => { fetchDashboard() }, [])
@@ -85,7 +130,6 @@ export default function Internship() {
   const totalIntern = data.kpi.total || 0
   const toPercent   = v => totalIntern ? Math.round(((v||0)/totalIntern)*100) : 0
 
-  // Clean NaN di semua data
   const cleanInstitusi  = data.institusi.map(d  => ({ ...d, institusi: cleanVal(d.institusi) }))
   const cleanPenempatan = data.penempatan.map(d => ({ ...d, penempatan: cleanVal(d.penempatan) }))
   const cleanKet        = data.ket.map(d        => ({ ...d, ket: cleanVal(d.ket) }))
@@ -95,6 +139,40 @@ export default function Internship() {
 
   const penemSorted = [...cleanPenempatan].sort((a,b) => b.jumlah-a.jumlah)
   const penemSliced = topPenem==='5' ? penemSorted.slice(0,5) : topPenem==='10' ? penemSorted.slice(0,10) : penemSorted
+
+  // Data untuk KPI cards (termasuk akan_berakhir)
+  const kpiCards = [
+    { 
+      status:"", label:"Total Intern", bg:"#e8e9f9", 
+      icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#060771"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="#060771" opacity=".35"/></svg>, 
+      pct:"Semua", pctC:NAVY, val:totalIntern, bar:NAVY 
+    },
+    { 
+      status:"onboard", label:"On Board", bg:"#dcfce7", 
+      icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, 
+      pct:`${toPercent(data.kpi.onboard)}%`, pctC:"#16a34a", val:data.kpi.onboard||0, bar:"#16a34a" 
+    },
+    { 
+      status:"butuh surat balasan", label:"Butuh Balasan", bg:"#fef3c7", 
+      icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#b45309" strokeWidth="1.8" fill="none"/><path d="M3 9l9 6 9-6" stroke="#b45309" strokeWidth="1.8"/></svg>, 
+      pct:`${toPercent(data.kpi.butuh_surat_balasan)}%`, pctC:"#b45309", val:data.kpi.butuh_surat_balasan||0, bar:"#b45309" 
+    },
+    { 
+      status:"ajukan ulang", label:"Ajukan Ulang", bg:"#fff3e0", 
+      icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5M20 20v-5h-5" stroke="#ea580c" strokeWidth="1.8" strokeLinecap="round"/><path d="M20 9A8 8 0 005.3 7.3M4 15a8 8 0 0014.7 1.7" stroke="#ea580c" strokeWidth="1.8" strokeLinecap="round"/></svg>, 
+      pct:`${toPercent(data.kpi.ajukan_ulang)}%`, pctC:"#ea580c", val:data.kpi.ajukan_ulang||0, bar:"#ea580c" 
+    },
+    { 
+      status:"selesai", label:"Selesai", bg:"#f9e8e8", 
+      icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" fill="#BF1A1A" opacity=".8"/><path d="M8 6V5a4 4 0 018 0v1" fill="#BF1A1A"/></svg>, 
+      pct:`${toPercent(data.kpi.selesai)}%`, pctC:RED, val:data.kpi.selesai||0, bar:RED 
+    },
+    { 
+      status:"akan_berakhir", label:"Akan Berakhir", bg:"#fff8e1", 
+      icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#f59e0b" strokeWidth="2"/><path d="M12 6v6l4 2" stroke="#f59e0b" strokeWidth="2"/></svg>, 
+      pct:`${toPercent(data.kpi.akan_berakhir)}%`, pctC:"#f59e0b", val:data.kpi.akan_berakhir||0, bar:"#f59e0b" 
+    }
+  ]
 
   return (
     <div className="internship-wrapper">
@@ -152,20 +230,14 @@ export default function Internship() {
 
       {/* KPI CARDS */}
       <div className="ikpi-grid">
-        {[
-          { status:"", bg:"#e8e9f9", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#060771"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="#060771" opacity=".35"/></svg>, pct:"Semua", pctC:NAVY, val:totalIntern, lbl:"Total Intern", bar:NAVY },
-          { status:"onboard", bg:"#dcfce7", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, pct:`${toPercent(data.kpi.onboard)}%`, pctC:"#16a34a", val:data.kpi.onboard||0, lbl:"On Board", bar:"#16a34a" },
-          { status:"butuh surat balasan", bg:"#fef3c7", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#b45309" strokeWidth="1.8" fill="none"/><path d="M3 9l9 6 9-6" stroke="#b45309" strokeWidth="1.8"/></svg>, pct:`${toPercent(data.kpi.butuh_surat_balasan)}%`, pctC:"#b45309", val:data.kpi.butuh_surat_balasan||0, lbl:"Butuh Balasan", bar:"#b45309" },
-          { status:"ajukan ulang", bg:"#fff3e0", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5M20 20v-5h-5" stroke="#ea580c" strokeWidth="1.8" strokeLinecap="round"/><path d="M20 9A8 8 0 005.3 7.3M4 15a8 8 0 0014.7 1.7" stroke="#ea580c" strokeWidth="1.8" strokeLinecap="round"/></svg>, pct:`${toPercent(data.kpi.ajukan_ulang)}%`, pctC:"#ea580c", val:data.kpi.ajukan_ulang||0, lbl:"Ajukan Ulang", bar:"#ea580c" },
-          { status:"selesai", bg:"#f9e8e8", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" fill="#BF1A1A" opacity=".8"/><path d="M8 6V5a4 4 0 018 0v1" fill="#BF1A1A"/></svg>, pct:`${toPercent(data.kpi.selesai)}%`, pctC:RED, val:data.kpi.selesai||0, lbl:"Selesai", bar:RED },
-        ].map((c,i) => (
-          <div key={i} className="ikpi-card">
+        {kpiCards.map((c, i) => (
+          <div key={i} className="ikpi-card" onClick={() => handleCardClick(c.status, c.label)}>
             <div className="ikpi-top">
               <div className="ikpi-icon" style={{ background:c.bg }}>{c.icon}</div>
               <span className="ikpi-pct" style={{ color:c.pctC }}>{c.pct}</span>
             </div>
             <p className="ikpi-value">{c.val}</p>
-            <p className="ikpi-label">{c.lbl}</p>
+            <p className="ikpi-label">{c.lbl || c.label}</p>
             <div className="ikpi-bar" style={{ background:c.bar }}/>
           </div>
         ))}
@@ -194,7 +266,7 @@ export default function Internship() {
         )}
       </div>
 
-      {/* ROW 3-KOLOM: Institusi | Tingkat Pendidikan | Penempatan (lebih lebar) */}
+      {/* ROW 3-KOLOM: Institusi | Tingkat Pendidikan | Penempatan */}
       <div className="int-row3">
 
         {/* Institusi — ranking list */}
@@ -274,8 +346,69 @@ export default function Internship() {
             </ResponsiveContainer>
           )}
         </div>
-
       </div>
+
+      {/* MODAL DETAIL (DRILL-DOWN) */}
+      {modalOpen && (
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Detail: {detailTitle}</h3>
+              <button className="modal-close" onClick={() => setModalOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              {detailLoading ? (
+                <p style={{ textAlign: 'center', padding: '40px' }}>Loading...</p>
+              ) : detailData.length === 0 ? (
+                <p style={{ textAlign: 'center', padding: '40px' }}>Tidak ada data</p>
+              ) : (
+                <div className="table-wrapper">
+                  <table className="detail-table">
+                    <thead>
+                      <tr>
+                        <th>Nama</th>
+                        <th>Program</th>
+                        <th>Institusi</th>
+                        <th>Kota</th>
+                        <th>Penempatan</th>
+                        <th>Durasi</th>
+                        <th>Status</th>
+                        <th>Permohonan</th>
+                        <th>Berakhir</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detailData.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>{item.nama || '-'}</td>
+                          <td>{item.program || '-'}</td>
+                          <td>{item.institusi || '-'}</td>
+                          <td>{item.kota || '-'}</td>
+                          <td>{item.penempatan || '-'}</td>
+                          <td>{item.durasi || '-'}</td>
+                          <td>
+                            <span className={`status-badge status-${item.status?.replace(/\s+/g, '-') || ''}`}>
+                              {item.status || '-'}
+                            </span>
+                          </td>
+                          <td>{item.permohonan || '-'}</td>
+                          <td>{item.berakhir || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <span>Total: {detailData.length} data</span>
+              <button onClick={() => setModalOpen(false)}>Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

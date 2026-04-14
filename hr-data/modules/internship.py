@@ -50,3 +50,25 @@ def calculate_kpi(df):
         "akan_berakhir": len(ab),
         "total": len(df)
     }
+
+# modules/internship.py (tambahkan setelah calculate_kpi)
+
+def filter_by_kpi_type(df, kpi_type):
+    from datetime import datetime, timedelta
+    today = pd.to_datetime(datetime.today().date())
+    batas = today + timedelta(days=14)
+
+    if kpi_type == 'onboard':
+        return df[df['status'] == 'onboard']
+    elif kpi_type == 'butuh_surat_balasan':
+        return df[df['status'] == 'butuh surat balasan']
+    elif kpi_type == 'ajukan_ulang':
+        return df[df['status'] == 'ajukan ulang']
+    elif kpi_type == 'selesai':
+        return df[df['status'] == 'selesai']
+    elif kpi_type == 'akan_berakhir':
+        return df[(df['berakhir'].notna()) & (df['berakhir'] >= today) & (df['berakhir'] <= batas)]
+    elif kpi_type == 'total':
+        return df
+    else:
+        raise ValueError(f"Unknown kpi_type: {kpi_type}")

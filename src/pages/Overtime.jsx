@@ -15,7 +15,7 @@ const fmtRupiah = (n) => {
   return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(n))
 }
 
-// Custom Tooltip yang sudah diperbaiki
+// Custom Tooltip
 const CT = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
@@ -50,6 +50,12 @@ function Overtime() {
   const [topOv, setTopOv] = useState('5')
   const [topCost, setTopCost] = useState('5')
 
+  // State untuk modal detail absensi
+  const [attendanceModalOpen, setAttendanceModalOpen] = useState(false)
+  const [selectedMonth, setSelectedMonth] = useState('')
+  const [attendanceDetail, setAttendanceDetail] = useState([])
+  const [detailLoading, setDetailLoading] = useState(false)
+
   const fetchData = (q = {}) => {
     setLoading(true)
     const params = new URLSearchParams()
@@ -61,6 +67,24 @@ function Overtime() {
       .then(res => { setData(res.data); setError(null) })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
+  }
+
+  // Fungsi untuk mengambil detail absensi harian
+  const fetchAttendanceDetail = async (bulan) => {
+    setDetailLoading(true)
+    setSelectedMonth(bulan)
+    setAttendanceModalOpen(true)
+    try {
+      const response = await axios.get(`http://127.0.0.1:5000/overtime/attendance/detail`, {
+        params: { bulan }
+      })
+      setAttendanceDetail(response.data.data || [])
+    } catch (error) {
+      console.error('Error fetching attendance detail:', error)
+      setAttendanceDetail([])
+    } finally {
+      setDetailLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -103,11 +127,9 @@ function Overtime() {
   const attSummary = attendance_summary || []
   const costTrend = overtime_cost_trend || []
 
-  // 🔧 BUAT SALINAN ARRAY SEBELUM SORTING (HINDARI READ-ONLY ERROR)
   const ovProjectSorted = [...(overtime_by_project || [])].sort((a, b) => b.overtime_percent - a.overtime_percent)
   const costProjectSorted = [...(cost_by_project || [])].sort((a, b) => b.overtime_cost - a.overtime_cost)
 
-  // Slicing berdasarkan toggle
   const topOvProject = topOv === '5' ? ovProjectSorted.slice(0, 5) : topOv === '10' ? ovProjectSorted.slice(0, 10) : ovProjectSorted
   const topCostProject = topCost === '5' ? costProjectSorted.slice(0, 5) : topCost === '10' ? costProjectSorted.slice(0, 10) : costProjectSorted
 
@@ -181,8 +203,21 @@ function Overtime() {
         </div>
 
         <div className="ot-card">
-          <p className="ot-ctitle">Tren Absensi Bulanan</p>
-          <p className="ot-cdesc">Persentase rata‑rata kehadiran per bulan</p>
+          <div className="ot-card-header" style={{ marginBottom: 8 }}>
+            <div>
+              <p className="ot-ctitle">Tren Absensi Bulanan</p>
+              <p className="ot-cdesc">Persentase rata‑rata kehadiran per bulan</p>
+            </div>
+            <button
+              className="ot-ba"
+              style={{ padding: '5px 14px', fontSize: 12 }}
+              onClick={() => {
+                if (attSummary.length > 0) fetchAttendanceDetail(attSummary[0].bulan)
+              }}
+            >
+              Lihat Detail
+            </button>
+          </div>
           {attSummary.length === 0 ? <p className="ot-nodata">Tidak ada data</p> : (
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={attSummary} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
@@ -216,7 +251,7 @@ function Overtime() {
         )}
       </div>
 
-      {/* ROW 3: Overtime % per Project & Cost per Project (dengan toggle) */}
+      {/* ROW 3: Overtime % per Project & Cost per Project */}
       <div className="ot-row2">
         {/* Overtime % per Project */}
         <div className="ot-card">
@@ -278,6 +313,84 @@ function Overtime() {
           )}
         </div>
       </div>
+
+      {/* MODAL DETAIL ABSENSI HARIAN */}
+      {attendanceModalOpen && (
+        <div className="modal-overlay" onClick={() => setAttendanceModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 900 }}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <h3>Detail Absensi Harian</h3>
+                <select
+                  className="ot-fs"
+                  style={{ width: 150 }}
+                  value={selectedMonth}
+                  onChange={(e) => fetchAttendanceDetail(e.target.value)}
+                >
+                  {attSummary.map((item) => (
+                    <option key={item.bulan} value={item.bulan}>{item.bulan}</option>
+                  ))}
+                </select>
+              </div>
+              <button className="modal-close" onClick={() => setAttendanceModalOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              {detailLoading ? (
+                <p style={{ textAlign: 'center', padding: 40 }}>Loading...</p>
+              ) : attendanceDetail.length === 0 ? (
+                <p style={{ textAlign: 'center', padding: 40 }}>Tidak ada data harian untuk bulan ini</p>
+              ) : (
+                <>
+                  <p style={{ fontSize: 13, marginBottom: 12, color: '#666' }}>
+                    Total {attendanceDetail.length} hari data
+                  </p>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <AreaChart data={attendanceDetail} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorAbsensiDetail" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={GREEN} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={GREEN} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="tanggal" tick={{ fontSize: 11 }} angle={-45} textAnchor="end" height={60} />
+                      <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} tickFormatter={(value) => `${value}%`} />
+                      <Tooltip formatter={(value) => [`${value}%`, 'Kehadiran']} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                      <Area type="monotone" dataKey="persentase" stroke={GREEN} strokeWidth={2} fill="url(#colorAbsensiDetail)" dot={{ r: 2, fill: GREEN }} activeDot={{ r: 4 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                  <div style={{ marginTop: 20, maxHeight: 200, overflowY: 'auto', border: '1px solid #eee', borderRadius: 6 }}>
+                    <table className="detail-table" style={{ fontSize: 12 }}>
+                      <thead>
+                        <tr>
+                          <th>Tanggal</th>
+                          <th>Persentase</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {attendanceDetail.map((item, idx) => (
+                          <tr key={idx}>
+                            <td>{item.tanggal}</td>
+                            <td>{item.persentase}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button onClick={() => setAttendanceModalOpen(false)}>Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

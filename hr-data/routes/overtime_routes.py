@@ -80,3 +80,63 @@ def overtime_dashboard():
         "top_cost_projects": top5.to_dict(orient='records'),
         "overtime_cost_trend": ct.to_dict(orient='records')
     })
+
+# routes/overtime_routes.py
+
+@overtime_bp.route('/attendance/detail')
+def attendance_detail():
+    """
+    Mengembalikan data absensi harian untuk bulan tertentu.
+    Query param: bulan (format: "Jan 2026" atau "2026-01")
+    """
+    from flask import request
+    import pandas as pd
+
+    # Ambil bulan dari query parameter
+    bulan_param = request.args.get('bulan')
+    if not bulan_param:
+        return jsonify({"error": "Parameter 'bulan' diperlukan"}), 400
+
+    # Ambil data dari cache
+    _, df_abs, _ = get_cached_data()  # df_abs adalah DataFrame absensi
+
+    if df_abs.empty:
+        return jsonify({"data": []})
+
+    # Parse bulan_param ke format yang sesuai
+    # Asumsi bulan_param bisa "Jan 2026" atau "2026-01"
+    try:
+        # Coba parse sebagai 'Jan 2026'
+        target_date = pd.to_datetime(bulan_param, format='%b %Y', errors='coerce')
+        if pd.isna(target_date):
+            # Coba parse sebagai '2026-01'
+            target_date = pd.to_datetime(bulan_param, format='%Y-%m', errors='coerce')
+        if pd.isna(target_date):
+            return jsonify({"error": "Format bulan tidak valid"}), 400
+    except:
+        return jsonify({"error": "Format bulan tidak valid"}), 400
+
+    # Filter data untuk bulan dan tahun yang sama
+    mask = (df_abs['periode'].dt.year == target_date.year) & \
+           (df_abs['periode'].dt.month == target_date.month)
+    filtered = df_abs[mask].copy()
+
+    # Format periode menjadi string tanggal (DD/MM/YYYY)
+    filtered['periode_str'] = filtered['periode'].dt.strftime('%d/%m/%Y')
+    # Ubah absensi ke persentase (misal 0.89 -> 89%)
+    filtered['absensi_pct'] = (filtered['absensi'] * 100).round(2)
+
+    # Pilih kolom yang akan dikirim
+    result = filtered[['periode_str', 'absensi_pct']].rename(
+        columns={'periode_str': 'tanggal', 'absensi_pct': 'persentase'}
+    )
+
+    # Urutkan berdasarkan tanggal
+    result = result.sort_values('tanggal')
+
+    records = result.to_dict(orient='records')
+    return jsonify({
+        "bulan": bulan_param,
+        "count": len(records),
+        "data": records
+    })
